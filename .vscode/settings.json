@@ -1,5 +1,4 @@
 {
-        "C_Cpp.default.configurationProvider": "go2sh.cmake-integration",
         "files.associations": {
                 "system_error": "cpp",
                 "array": "cpp",
@@ -48,6 +47,7 @@
                 "sstream": "cpp",
                 "stdexcept": "cpp",
                 "streambuf": "cpp",
-                "typeinfo": "cpp"
+                "typeinfo": "cpp",
+                "charconv": "cpp"
         }
 }
