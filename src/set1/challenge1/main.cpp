@@ -1,5 +1,5 @@
-#include "asserts.h"
-#include "utils.h"
+#include "matasano_asserts.h"
+#include "matasano_convert.h"
 #include <iostream>
 #include <string>
 
@@ -8,7 +8,7 @@ static std::string EXP_OUTPUT = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29
 
 int main()
 {
-    auto output = Utils::hexToBase64(INPUT);
+    auto output = Convert::hexToBase64(INPUT);
     VALIDATE_EQ(output, EXP_OUTPUT);
 
     std::cout << "Success !" << std::endl;

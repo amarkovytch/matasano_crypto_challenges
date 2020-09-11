@@ -1,5 +1,7 @@
-#include "asserts.h"
-#include "utils.h"
+#include "matasano_asserts.h"
+#include "matasano_math.h"
+#include "math.h"
+
 #include <iostream>
 #include <string>
 
@@ -9,7 +11,7 @@ static std::string EXP_OUTPUT = "746865206b696420646f6e277420706c6179";
 
 int main()
 {
-    auto output = Utils::xorHexStrs(INPUT1, INPUT2);
+    auto output = Math::xorHexStrs(INPUT1, INPUT2);
     VALIDATE_EQ(output, EXP_OUTPUT);
 
     std::cout << "Success !" << std::endl;

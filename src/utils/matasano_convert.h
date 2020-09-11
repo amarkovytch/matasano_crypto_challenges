@@ -1,12 +1,15 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef MATASANO_CONVERT_H
+#define MATASANO_CONVERT_H
 
 #include <exception>
 #include <stdexcept>
 #include <string>
 #include <tuple>
 
-class Utils
+/**
+ * @brief Collection of various convertes
+ */
+class Convert
 {
 public:
     /**
@@ -43,20 +46,6 @@ public:
      * @return std::string resulting string
      */
     static std::string numToStr(unsigned long long num, size_t min_width = 0, int base = 16);
-
-    /**
-     * @brief Returns xor of 2 given hex strings
-     *
-     * @param hex1 hex string1
-     * @param hex2 hex string2
-     *
-     * @return std::string the xored result
-     *
-     * @throw std::invalid_argument if either of given arguments is not in hex
-     * format or if they have not equal length
-     */
-    static std::string xorHexStrs(const std::string hex1,
-                                  const std::string hex2);
 
 private:
     /**
@@ -98,14 +87,6 @@ private:
      * @return base64 char
      */
     static char numToBase64(unsigned int num);
-
-    /**
-     * @brief throws an exception if hex has uneven length
-     *
-     * @param hex hex string to validate
-     * @throw std::invalid_argument if has has uneven length
-     */
-    static void assertHexIsEven(const std::string hex);
 };
 
 #endif

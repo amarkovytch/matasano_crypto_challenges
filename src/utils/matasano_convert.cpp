@@ -1,12 +1,11 @@
-#include <asserts.h>
-#include <utils.h>
+#include "matasano_convert.h"
+#include "matasano_asserts.h"
 
 #include <charconv>
 #include <iomanip>
 #include <sstream>
-#include <stdexcept>
 
-char Utils::numToBase64(unsigned int num)
+char Convert::numToBase64(unsigned int num)
 {
     ASSERT(num <= 64);
 
@@ -34,7 +33,7 @@ char Utils::numToBase64(unsigned int num)
     return '/';
 }
 
-std::string Utils::octal4ToBase64_4(const std::string octal)
+std::string Convert::octal4ToBase64_4(const std::string octal)
 {
     ASSERT(octal.length() == 8);
 
@@ -49,7 +48,7 @@ std::string Utils::octal4ToBase64_4(const std::string octal)
     return base64;
 }
 
-unsigned long long Utils::parseNumFromStr(const std::string str, int base)
+unsigned long long Convert::parseNumFromStr(const std::string str, int base)
 {
     auto SUCCESS = std::errc();
     unsigned long long result = 0;
@@ -64,8 +63,8 @@ unsigned long long Utils::parseNumFromStr(const std::string str, int base)
     return result;
 }
 
-std::string Utils::padWith(const std::string str, const std::string pad,
-                           size_t iterations)
+std::string Convert::padWith(const std::string str, const std::string pad,
+                             size_t iterations)
 {
     auto padded = str;
 
@@ -77,7 +76,7 @@ std::string Utils::padWith(const std::string str, const std::string pad,
     return padded;
 }
 
-std::string Utils::hex3To4Octal(const std::string hex)
+std::string Convert::hex3To4Octal(const std::string hex)
 {
     ASSERT(hex.length() == 6);
 
@@ -91,18 +90,12 @@ std::string Utils::hex3To4Octal(const std::string hex)
     return res;
 }
 
-void Utils::assertHexIsEven(const std::string hex)
-{
-    THROW_IF(hex.length() % 2 != 0, hex + " has uneven length",
-             std::invalid_argument);
-}
-
 // The principle is simple: translate every 3 hex bytes (6 char) to octal string
 // (of length 4) If hex string is not multiply of 3, add needed 00 padding, in
 // the end, remove the same number of padded bytes and place '=' * number of
 // padded bytes instead Look at https://en.wikipedia.org/wiki/Base64 for more
 // info
-std::string Utils::hexToBase64(const std::string hex)
+std::string Convert::hexToBase64(const std::string hex)
 {
     std::string result;
 
@@ -127,31 +120,10 @@ std::string Utils::hexToBase64(const std::string hex)
     return padWith(result, "=", bytesToPad);
 }
 
-std::string Utils::numToStr(unsigned long long num, size_t min_width, int base)
+std::string Convert::numToStr(unsigned long long num, size_t min_width, int base)
 {
     std::ostringstream os;
     os << std::setbase(base) << std::setfill('0') << std::setw(min_width) << num;
 
     return os.str();
-}
-
-std::string Utils::xorHexStrs(const std::string hex1, const std::string hex2)
-{
-    assertHexIsEven(hex1);
-    assertHexIsEven(hex2);
-
-    THROW_IF(hex1.length() != hex2.length(),
-             hex1 + " length is not equal to the length of " + hex2,
-             std::invalid_argument);
-
-    std::string res;
-
-    for (auto i = 0; i < hex1.length(); i += 2)
-    {
-        auto num1 = parseNumFromStr(hex1.substr(i, 2));
-        auto num2 = parseNumFromStr(hex2.substr(i, 2));
-        res += numToStr(num1 ^ num2, 2);
-    }
-
-    return res;
 }
