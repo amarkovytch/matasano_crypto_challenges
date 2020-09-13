@@ -1,6 +1,7 @@
 #ifndef MATASANO_ASSERTS_H
 #define MATASANO_ASSERTS_H
 
+#include <ostream>
 #include <string>
 
 /**
@@ -23,7 +24,7 @@
  * @brief Throws std::logic_error if given condition is violated
  * Used to validate internal logic
  */
-#define ASSERT(cond) \
+#define LOGIC_ASSERT(cond) \
     THROW_IF(!(cond), std::string(#cond) + " is violated " + FILE_LINE, std::logic_error);
 
 /**
@@ -38,6 +39,6 @@
  * @param hex hex string to validate
  * @throw std::invalid_argument if has has uneven length
  */
-void assertHexIsEven(const std::string hex);
+void checkHexIsEven(const std::string hex);
 
 #endif

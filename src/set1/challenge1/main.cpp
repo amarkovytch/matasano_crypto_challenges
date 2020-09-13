@@ -1,5 +1,5 @@
+#include "byte_data.h"
 #include "matasano_asserts.h"
-#include "matasano_convert.h"
 #include <iostream>
 #include <string>
 
@@ -8,8 +8,8 @@ static std::string EXP_OUTPUT = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29
 
 int main()
 {
-    auto output = Convert::hexToBase64(INPUT);
-    VALIDATE_EQ(output, EXP_OUTPUT);
+    ByteData data(INPUT);
+    VALIDATE_EQ(data.str(ByteData::encoding::base64), EXP_OUTPUT);
 
     std::cout << "Success !" << std::endl;
 

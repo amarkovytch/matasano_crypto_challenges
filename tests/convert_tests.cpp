@@ -1,32 +1,6 @@
 #include "matasano_convert.h"
 #include "gtest/gtest.h"
 
-TEST(ConvertTestsBase64, TestEmpty)
-{
-    auto empty = Convert::hexToBase64("");
-    ASSERT_EQ(empty, "");
-}
-
-TEST(ConvertTestsBase64, TestHexWithWrongLength)
-{
-    ASSERT_THROW(Convert::hexToBase64("abc"), std::invalid_argument);
-}
-
-TEST(ConvertTestsBase64, TestNoPad)
-{
-    ASSERT_EQ("EjRW", Convert::hexToBase64("123456"));
-}
-
-TEST(ConvertTestsBase64, Test1Pad)
-{
-    ASSERT_EQ("EjRWeJA=", Convert::hexToBase64("1234567890"));
-}
-
-TEST(ConvertTestsBase64, Test2Pad)
-{
-    ASSERT_EQ("EjRWeA==", Convert::hexToBase64("12345678"));
-}
-
 TEST(ConvertTestsParseNum, TestEmpty)
 {
     ASSERT_THROW(Convert::parseNumFromStr(""), std::invalid_argument);

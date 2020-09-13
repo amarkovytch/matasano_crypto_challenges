@@ -13,16 +13,6 @@ class Convert
 {
 public:
     /**
-     * @brief Converts hex string to base64 string
-     *
-     * @param hex Hex string (without 0x)
-     * @return base64 string
-     *
-     * @throw std::invalid_argument if hex is not in hex format
-     */
-    static std::string hexToBase64(const std::string hex);
-
-    /**
      * @brief Parses unsigned long long integer from numerical string
      *
      * @param str string
@@ -47,26 +37,16 @@ public:
      */
     static std::string numToStr(unsigned long long num, size_t min_width = 0, int base = 16);
 
-private:
     /**
-     * @brief Converts hex string of 3 bytes (6 length) to octal string of 4
-     * octets
+     * @brief Converts hex string of 3 bytes (6 length) to base64
+     * string of 4 symbols
      *
      * @param hex Hex string (without 0x). Assumes the length is 6
-     * @return octal string
+     * @return base64 string
      *
      * @throw std::invalid_argument if hex is not in hex format
      */
-    static std::string hex3To4Octal(const std::string hex);
-
-    /**
-     * @brief Converts octal string of length 4 octets (8 length) to base64
-     * string of 4 symbols
-     *
-     * @param octal string. Assumes the length of 8
-     * @return base64 string
-     */
-    static std::string octal4ToBase64_4(const std::string octal);
+    static std::string hex3ToBase64_4(const std::string hex);
 
     /**
      * @brief pad the given string the the given amount of pad string iterations
@@ -79,6 +59,7 @@ private:
     static std::string padWith(const std::string str, const std::string pad,
                                size_t iterations);
 
+private:
     /**
      * @brief convert a number into a single bas64 char
      * assumes the number is in range(0, 63)

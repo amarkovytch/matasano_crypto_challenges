@@ -7,7 +7,7 @@
 
 char Convert::numToBase64(unsigned int num)
 {
-    ASSERT(num <= 64);
+    LOGIC_ASSERT(num <= 64);
 
     if (num <= 25)
     {
@@ -33,18 +33,23 @@ char Convert::numToBase64(unsigned int num)
     return '/';
 }
 
-std::string Convert::octal4ToBase64_4(const std::string octal)
+std::string Convert::hex3ToBase64_4(const std::string hex)
 {
-    ASSERT(octal.length() == 8);
+    LOGIC_ASSERT(hex.length() == 6);
+
+    unsigned long number = parseNumFromStr(hex, 16);
+
+    auto octal = numToStr(number, 8, 8);
+
+    LOGIC_ASSERT(octal.length() == 8);
 
     std::string base64;
-    for (int i = 0; i < octal.length(); i += 2)
+    for (unsigned int i = 0; i < octal.length(); i += 2)
     {
         auto num = parseNumFromStr(octal.substr(i, 2), 8);
         base64 += numToBase64(num);
     }
 
-    ASSERT(base64.length() == 4);
     return base64;
 }
 
@@ -68,56 +73,12 @@ std::string Convert::padWith(const std::string str, const std::string pad,
 {
     auto padded = str;
 
-    for (int i = 0; i < iterations; i++)
+    for (unsigned int i = 0; i < iterations; i++)
     {
         padded += pad;
     }
 
     return padded;
-}
-
-std::string Convert::hex3To4Octal(const std::string hex)
-{
-    ASSERT(hex.length() == 6);
-
-    std::ostringstream os;
-    unsigned long number = parseNumFromStr(hex, 16);
-
-    auto res = numToStr(number, 8, 8);
-
-    ASSERT(res.length() == 8);
-
-    return res;
-}
-
-// The principle is simple: translate every 3 hex bytes (6 char) to octal string
-// (of length 4) If hex string is not multiply of 3, add needed 00 padding, in
-// the end, remove the same number of padded bytes and place '=' * number of
-// padded bytes instead Look at https://en.wikipedia.org/wiki/Base64 for more
-// info
-std::string Convert::hexToBase64(const std::string hex)
-{
-    std::string result;
-
-    assertHexIsEven(hex);
-
-    auto numBytes = hex.length() / 2;
-    unsigned char bytesToPad = (3 - numBytes % 3) % 3;
-
-    // this is to guarantee that hex string is a multiply of triples of bytes
-    auto padded_hex = padWith(hex, "00", bytesToPad);
-
-    for (auto i = 0; i < hex.length(); i += 6)
-    {
-        auto octal4 = hex3To4Octal(padded_hex.substr(i, 6));
-        auto base64_4 = octal4ToBase64_4(octal4);
-        result += base64_4;
-    }
-
-    // remove the padding symbols
-    result = result.erase(result.length() - bytesToPad, bytesToPad);
-
-    return padWith(result, "=", bytesToPad);
 }
 
 std::string Convert::numToStr(unsigned long long num, size_t min_width, int base)
