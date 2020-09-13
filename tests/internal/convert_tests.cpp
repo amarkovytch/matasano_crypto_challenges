@@ -1,4 +1,4 @@
-#include "matasano_convert.h"
+#include "internal/matasano_convert.h"
 #include "gtest/gtest.h"
 
 TEST(ConvertTestsParseNum, TestEmpty)

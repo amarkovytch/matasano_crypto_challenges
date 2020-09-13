@@ -1,6 +1,6 @@
 #include "byte_data.h"
+#include "internal/matasano_convert.h"
 #include "matasano_asserts.h"
-#include "matasano_convert.h"
 
 ByteData::ByteData(const std::string &str, encoding strEnc)
 {
