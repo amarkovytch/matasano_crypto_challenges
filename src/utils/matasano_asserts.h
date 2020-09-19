@@ -30,7 +30,7 @@
  * @brief Generates __FILE__:__LINE__ string
  * Used in internal assertions
  */
-#define FILE_LINE std::string(__FILE__) + ":" + std::to_string(__LINE__)
+#define FILE_LINE "\n" + std::string(__FILE__) + ":" + std::to_string(__LINE__)
 
 /**
  * @brief throws an exception if hex has uneven length

@@ -155,12 +155,20 @@ TEST(ByteDataTest, OperatorXorCyclic)
     ASSERT_EQ("00ab00ab00ab00ab", (b1 ^ b2).str());
 }
 
-TEST(ByteDataTest, OperatorXorCyclicWrongOrderOfArguments)
+TEST(ByteDataTest, OperatorXorRhsLongerThanLhs)
 {
     ByteData b1("ab00ab00ab00ab00");
     ByteData b2("ab");
 
-    ASSERT_THROW(b2 ^ b1, std::invalid_argument);
+    ASSERT_EQ("00", (b2 ^ b1).str());
+}
+
+TEST(ByteDataTest, OperatorXorLhsDoNotDivideRhs)
+{
+    ByteData b1("abcc00abcc00abcc00abcc");
+    ByteData b2("abccaa");
+
+    ASSERT_EQ("0000aa0000aa0000aa0000", (b1 ^ b2).str());
 }
 
 TEST(ByteDataTest, OperatorXorCyclicOneChar)

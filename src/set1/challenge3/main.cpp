@@ -6,11 +6,11 @@
 #include <iostream>
 #include <string>
 
-static std::string CIPHERED_TEXT = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+static const std::string CIPHERED_TEXT = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
 
 int main()
 {
-    auto referenceEnglish = FileUtils::read("assets/lotr.txt");
+    auto referenceEnglish = FileUtils::read("./assets/lotr.txt");
     DecryptorXor decryptor(referenceEnglish);
     auto [resultStr, resultCipher, ignore] = decryptor.decipher(CIPHERED_TEXT);
     std::cout << "The text is: " << resultStr << std::endl;

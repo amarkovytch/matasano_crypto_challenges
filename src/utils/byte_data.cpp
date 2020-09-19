@@ -22,10 +22,7 @@ ByteData::ByteData(const std::string &str, encoding strEnc)
     }
 }
 
-ByteData::ByteData(std::byte b)
-{
-    byteData.push_back(b);
-}
+ByteData::ByteData(std::byte b) { byteData.push_back(b); }
 
 ByteData::ByteData(std::vector<std::byte> bytes)
 {
@@ -88,20 +85,12 @@ ByteData &ByteData::operator^=(const ByteData &rhs)
     return *this;
 }
 
-void ByteData::xorVectors(const std::vector<std::byte> &lhs,
-                          const std::vector<std::byte> &rhs,
+void ByteData::xorVectors(const std::vector<std::byte> &lhs, const std::vector<std::byte> &rhs,
                           std::vector<std::byte> &result)
 {
     LOGIC_ASSERT(lhs.size() != 0);
     LOGIC_ASSERT(rhs.size() != 0);
     LOGIC_ASSERT(result.size() == lhs.size());
-
-    THROW_IF(lhs.size() % rhs.size() != 0,
-             "size of " +
-                 strPlainInternal(lhs) +
-                 "should be a multiply of the size of " +
-                 strPlainInternal(rhs) + " argument",
-             std::invalid_argument);
 
     for (unsigned i = 0; i < result.size(); i++)
     {
@@ -127,10 +116,7 @@ std::string ByteData::str(encoding strEnc) const
     }
 }
 
-std::string ByteData::strPlain() const
-{
-    return strPlainInternal(byteData);
-}
+std::string ByteData::strPlain() const { return strPlainInternal(byteData); }
 
 std::string ByteData::strPlainInternal(const std::vector<std::byte> &data)
 {
@@ -144,10 +130,7 @@ std::string ByteData::strPlainInternal(const std::vector<std::byte> &data)
     return res;
 }
 
-std::string ByteData::strHex() const
-{
-    return strHexInternal(0, byteData.size());
-}
+std::string ByteData::strHex() const { return strHexInternal(0, byteData.size()); }
 
 std::string ByteData::strHexInternal(std::size_t start, std::size_t end) const
 {
@@ -179,8 +162,7 @@ std::string ByteData::strBase64() const
     if (bytesToPad != 0)
     {
         // convert the remaining 3 bytes with additional pad
-        std::string paddedHexReminder = Convert::padWith(
-            strHexInternal(i, byteData.size()), "00", bytesToPad);
+        std::string paddedHexReminder = Convert::padWith(strHexInternal(i, byteData.size()), "00", bytesToPad);
 
         result += Convert::hex3ToBase64_4(paddedHexReminder);
 

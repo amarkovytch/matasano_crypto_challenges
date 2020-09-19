@@ -72,28 +72,22 @@ public:
 
     /**
      * @brief performs mathematical xor between two objects
-     * If objects are not the same size, the lhs object size should be a
-     * multiply of rhs size. The xor operation is then applied cyclically
+     * rhs is applied cyclically to lhs
      *
      * @param lhs the first argument
      * @param rhs the second argument
      *
      * @return the result of the described xor operation
-     * @throw std::invalid_argument if the size of lhs object is not a
-     * multiply of rhs
      */
     friend ByteData operator^(ByteData lhs, const ByteData &rhs);
 
     /**
      * @brief performs mathematical xor between this object and the other one
-     * If objects are not the same size, this object size should be a
-     * multiply of rhs size. The xor operation is then applied cyclically
+     * rhs is applied cyclically to lhs
      *
      * @param rhs the other object to perform xor operation
      *
      * @return this object that holds the result of the described xor operation
-     * @throw std::invalid_argument if the size of this object is not a
-     * multiply of rhs
      */
     ByteData &operator^=(const ByteData &rhs);
 
@@ -181,16 +175,12 @@ private:
 
     /**
      * @brief xors two given vectors and stores the result in result
-     * If vectors are not the same size, lhs object size should be a
-     * multiply of rhs size. The xor operation is then applied cyclically
+     * rhs is applied cyclically to lhs
      *
      * @param lhs the first argument
      * @param rhs the first argument
      * @param result the result to store, it's size should be the same
      * as size of lhs
-     *
-     * @throw std::invalid_argument if the size of lhs object is not a
-     * multiply of rhs
      */
     static void xorVectors(const std::vector<std::byte> &lhs,
                            const std::vector<std::byte> &rhs,

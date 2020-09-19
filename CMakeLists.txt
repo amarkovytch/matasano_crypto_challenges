@@ -13,6 +13,7 @@ add_subdirectory (src/set1/challenge1)
 add_subdirectory (src/set1/challenge2)
 add_subdirectory (src/set1/challenge3)
 add_subdirectory (src/set1/challenge4)
+add_subdirectory (src/set1/challenge5)
 add_subdirectory (src/utils)
 add_subdirectory (tests)
 
