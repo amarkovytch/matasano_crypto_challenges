@@ -10,9 +10,9 @@ static std::string CIPHERED_TEXT = "1b37373331363f78151b7f2b783431333d7839782837
 
 int main()
 {
-    auto referenceEnglish = FileUtils::readFile("assets/lotr.txt");
+    auto referenceEnglish = FileUtils::read("assets/lotr.txt");
     DecryptorXor decryptor(referenceEnglish);
-    auto result = decryptor.decipher(CIPHERED_TEXT);
-    std::cout << "The text is: " << std::get<0>(result) << std::endl;
-    std::cout << "The cipher byte was: " << std::to_integer<unsigned int>(std::get<1>(result)) << std::endl;
+    auto [resultStr, resultCipher, ignore] = decryptor.decipher(CIPHERED_TEXT);
+    std::cout << "The text is: " << resultStr << std::endl;
+    std::cout << "The cipher byte was: " << std::to_integer<unsigned int>(resultCipher) << std::endl;
 }

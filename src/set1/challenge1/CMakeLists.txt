@@ -6,5 +6,3 @@ add_executable (set_challenge1 main.cpp)
 # public include directories we will use those link directories when building
 # set_challenge1
 target_link_libraries (set_challenge1 LINK_PUBLIC utils)
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
