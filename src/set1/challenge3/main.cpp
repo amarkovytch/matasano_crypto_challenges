@@ -1,0 +1,18 @@
+#include "byte_data.h"
+#include "decryptor_xor.h"
+#include "file_utils.h"
+#include "matasano_asserts.h"
+
+#include <iostream>
+#include <string>
+
+static std::string CIPHERED_TEXT = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+
+int main()
+{
+    auto referenceEnglish = FileUtils::readFile("assets/lotr.txt");
+    DecryptorXor decryptor(referenceEnglish);
+    auto result = decryptor.decipher(CIPHERED_TEXT);
+    std::cout << "The text is: " << std::get<0>(result) << std::endl;
+    std::cout << "The cipher byte was: " << std::to_integer<unsigned int>(std::get<1>(result)) << std::endl;
+}

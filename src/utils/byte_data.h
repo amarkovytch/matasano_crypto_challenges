@@ -1,5 +1,5 @@
-#ifndef BYTE_DATA_H
-#define BYTE_DATA_H
+#ifndef MATASANO_BYTE_DATA_H
+#define MATASANO_BYTE_DATA_H
 
 #include <cstddef>
 #include <map>
@@ -129,25 +129,20 @@ public:
     }
 
     /**
-     * @brief calculates percentage distribution of each byte in object's data.
-     * The result is map with each byte that appears in data as key and the percentage
-     * of the number of time it appears in data as value. Bytes that do not appear
-     * in data, will not be present in map.
-     * For example:
+     * @brief Return reference to the undelying data vector
      *
-     * If object has these bytes  : {10, 10, 99, 98}
-     * The resulting map shall be : {{10, 50}, {99, 25}, {98, 25}}
-     *
-     * @return map as described above
-     *
+     * @return reference to the data vector
      */
-    std::map<std::byte, double> distribution() const;
+    inline std::vector<std::byte> const &data() const
+    {
+        return byteData;
+    }
 
 private:
     /**
      * underlying object byte data
      */
-    std::vector<std::byte> data;
+    std::vector<std::byte> byteData;
 
     /**
      * @brief parses string data as hex. Should be called from constructor
@@ -219,7 +214,7 @@ private:
      * @param end index one past the last index
      * @return string
      */
-    std::string strHexInternal(size_t start, size_t end) const;
+    std::string strHexInternal(std::size_t start, std::size_t end) const;
 };
 
 #endif

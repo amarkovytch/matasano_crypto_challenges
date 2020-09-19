@@ -24,42 +24,42 @@ ByteData::ByteData(const std::string &str, encoding strEnc)
 
 ByteData::ByteData(std::byte b)
 {
-    data.push_back(b);
+    byteData.push_back(b);
 }
 
 ByteData::ByteData(std::vector<std::byte> bytes)
 {
     THROW_IF(bytes.empty(), "can't construct from empty string", std::invalid_argument);
-    data = bytes;
+    byteData = bytes;
 }
 
 ByteData operator+(ByteData lhs, const ByteData &rhs)
 {
-    ByteData res(lhs.data);
-    res.data.insert(res.data.end(), rhs.data.begin(), rhs.data.end());
+    ByteData res(lhs.byteData);
+    res.byteData.insert(res.byteData.end(), rhs.byteData.begin(), rhs.byteData.end());
     return res;
 }
 
 ByteData &ByteData::operator+=(const ByteData &rhs)
 {
-    data.insert(data.end(), rhs.data.begin(), rhs.data.end());
+    byteData.insert(byteData.end(), rhs.byteData.begin(), rhs.byteData.end());
     return *this;
 }
 
 void ByteData::parsePlain(const std::string &str)
 {
-    LOGIC_ASSERT(data.size() == 0);
+    LOGIC_ASSERT(byteData.size() == 0);
 
     for (unsigned char ch : str)
     {
         std::byte b{ch};
-        data.push_back(b);
+        byteData.push_back(b);
     }
 }
 
 void ByteData::parseHex(const std::string &str)
 {
-    LOGIC_ASSERT(data.size() == 0);
+    LOGIC_ASSERT(byteData.size() == 0);
 
     checkHexIsEven(str);
 
@@ -68,22 +68,22 @@ void ByteData::parseHex(const std::string &str)
         auto number = Convert::parseNumFromStr(str.substr(i, 2), 16);
         LOGIC_ASSERT(number <= 255);
         std::byte b{static_cast<unsigned char>(number)};
-        data.push_back(b);
+        byteData.push_back(b);
     }
 }
 
 ByteData operator^(ByteData lhs, const ByteData &rhs)
 {
-    ByteData res(std::vector<std::byte>(lhs.data.size()));
+    ByteData res(std::vector<std::byte>(lhs.byteData.size()));
 
-    ByteData::xorVectors(lhs.data, rhs.data, res.data);
+    ByteData::xorVectors(lhs.byteData, rhs.byteData, res.byteData);
 
     return res;
 }
 
 ByteData &ByteData::operator^=(const ByteData &rhs)
 {
-    xorVectors(data, rhs.data, data);
+    xorVectors(byteData, rhs.byteData, byteData);
 
     return *this;
 }
@@ -129,7 +129,7 @@ std::string ByteData::str(encoding strEnc) const
 
 std::string ByteData::strPlain() const
 {
-    return strPlainInternal(data);
+    return strPlainInternal(byteData);
 }
 
 std::string ByteData::strPlainInternal(const std::vector<std::byte> &data)
@@ -146,16 +146,16 @@ std::string ByteData::strPlainInternal(const std::vector<std::byte> &data)
 
 std::string ByteData::strHex() const
 {
-    return strHexInternal(0, data.size());
+    return strHexInternal(0, byteData.size());
 }
 
-std::string ByteData::strHexInternal(size_t start, size_t end) const
+std::string ByteData::strHexInternal(std::size_t start, std::size_t end) const
 {
     std::string res;
 
     for (auto i = start; i < end; i++)
     {
-        res += Convert::numToStr(std::to_integer<unsigned char>(data.at(i)), 2, 16);
+        res += Convert::numToStr(std::to_integer<unsigned char>(byteData.at(i)), 2, 16);
     }
 
     return res;
@@ -165,13 +165,13 @@ std::string ByteData::strBase64() const
 {
     std::string result;
 
-    auto numBytes = data.size();
+    auto numBytes = byteData.size();
     unsigned char bytesToPad = (3 - numBytes % 3) % 3;
 
     // convert every 3 bytes to 4 octal numbers and from that to one base64 symbol
     // iterate all the triples except the reminder
     unsigned int i = 0;
-    for (; i < data.size() - data.size() % 3; i += 3)
+    for (; i < byteData.size() - byteData.size() % 3; i += 3)
     {
         result += Convert::hex3ToBase64_4(strHexInternal(i, i + 3));
     }
@@ -180,7 +180,7 @@ std::string ByteData::strBase64() const
     {
         // convert the remaining 3 bytes with additional pad
         std::string paddedHexReminder = Convert::padWith(
-            strHexInternal(i, data.size()), "00", bytesToPad);
+            strHexInternal(i, byteData.size()), "00", bytesToPad);
 
         result += Convert::hex3ToBase64_4(paddedHexReminder);
 
@@ -195,31 +195,18 @@ std::string ByteData::strBase64() const
 
 bool operator==(const ByteData &lhs, const ByteData &rhs)
 {
-    if (lhs.data.size() != lhs.data.size())
+    if (lhs.byteData.size() != lhs.byteData.size())
     {
         return false;
     }
 
-    for (unsigned int i = 0; i < lhs.data.size(); i++)
+    for (unsigned int i = 0; i < lhs.byteData.size(); i++)
     {
-        if (lhs.data[i] != rhs.data[i])
+        if (lhs.byteData[i] != rhs.byteData[i])
         {
             return false;
         }
     }
 
     return true;
-}
-
-std::map<std::byte, double> ByteData::distribution() const
-{
-    std::map<std::byte, double> res;
-    double one_elm_percentage = (1.0 / data.size()) * 100;
-
-    for (auto b : data)
-    {
-        res[b] += one_elm_percentage;
-    }
-
-    return res;
 }

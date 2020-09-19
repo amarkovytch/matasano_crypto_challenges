@@ -69,7 +69,7 @@ unsigned long long Convert::parseNumFromStr(const std::string str, int base)
 }
 
 std::string Convert::padWith(const std::string str, const std::string pad,
-                             size_t iterations)
+                             std::size_t iterations)
 {
     auto padded = str;
 
@@ -81,7 +81,7 @@ std::string Convert::padWith(const std::string str, const std::string pad,
     return padded;
 }
 
-std::string Convert::numToStr(unsigned long long num, size_t min_width, int base)
+std::string Convert::numToStr(unsigned long long num, std::size_t min_width, int base)
 {
     std::ostringstream os;
     os << std::setbase(base) << std::setfill('0') << std::setw(min_width) << num;

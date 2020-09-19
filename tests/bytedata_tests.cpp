@@ -77,6 +77,19 @@ TEST(ByteDataTest, ConstructFromVector)
     ASSERT_EQ("AAA", bd.str(ByteData::encoding::plain));
 }
 
+TEST(ByteDataTest, DataTest)
+{
+    std::byte b{0x41};
+
+    std::vector<std::byte> vec;
+    vec.push_back(b);
+    vec.push_back(b);
+    vec.push_back(b);
+
+    ByteData bd(vec);
+    ASSERT_EQ(vec, bd.data());
+}
+
 TEST(ByteDataTest, OperatorPlus)
 {
     ByteData b = ByteData("123", ByteData::encoding::plain) +
@@ -165,24 +178,4 @@ TEST(ByteDataTest, OperatorEquals)
 
     ASSERT_TRUE(b1 == b2);
     ASSERT_FALSE(b1 != b2);
-}
-
-TEST(ByteDataTest, DistributionTest)
-{
-    ByteData b1("aabc", ByteData::encoding::plain);
-    auto map = b1.distribution();
-
-    ASSERT_EQ(3, map.size());
-
-    ASSERT_EQ(50.0, map.at(std::byte{'a'}));
-    ASSERT_EQ(25.0, map.at(std::byte{'b'}));
-    ASSERT_EQ(25.0, map.at(std::byte{'c'}));
-}
-
-TEST(ByteDataTest, DistributionTestFractopm)
-{
-    ByteData b1("caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", ByteData::encoding::plain);
-    auto map = b1.distribution();
-
-    ASSERT_EQ(2.5, map.at(std::byte{'c'}));
 }

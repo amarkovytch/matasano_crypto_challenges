@@ -4,7 +4,6 @@
 #include <exception>
 #include <stdexcept>
 #include <string>
-#include <tuple>
 
 /**
  * @brief Collection of various convertes
@@ -35,7 +34,7 @@ public:
      *
      * @return std::string resulting string
      */
-    static std::string numToStr(unsigned long long num, size_t min_width = 0, int base = 16);
+    static std::string numToStr(unsigned long long num, std::size_t min_width = 0, int base = 16);
 
     /**
      * @brief Converts hex string of 3 bytes (6 length) to base64
@@ -57,7 +56,7 @@ public:
      * @return padded string
      */
     static std::string padWith(const std::string str, const std::string pad,
-                               size_t iterations);
+                               std::size_t iterations);
 
 private:
     /**
