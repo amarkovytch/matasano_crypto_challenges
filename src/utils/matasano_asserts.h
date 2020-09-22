@@ -32,12 +32,4 @@
  */
 #define FILE_LINE "\n" + std::string(__FILE__) + ":" + std::to_string(__LINE__)
 
-/**
- * @brief throws an exception if hex has uneven length
- *
- * @param hex hex string to validate
- * @throw std::invalid_argument if has has uneven length
- */
-void checkHexIsEven(const std::string hex);
-
 #endif

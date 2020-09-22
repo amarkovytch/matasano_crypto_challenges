@@ -1,11 +1,12 @@
 #include "file_utils.h"
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 
-std::string FileUtils::read(const std::string &fileName)
+std::string FileUtils::read(const std::string &fileName, bool ignoreEOLs)
 {
     std::ifstream file;
     file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -14,7 +15,15 @@ std::string FileUtils::read(const std::string &fileName)
     std::ostringstream contents;
     contents << file.rdbuf();
     file.close();
-    return (contents.str());
+    auto res = contents.str();
+
+    if (ignoreEOLs)
+    {
+        res.erase(std::remove(res.begin(), res.end(), '\n'), res.end());
+        res.erase(std::remove(res.begin(), res.end(), '\r'), res.end());
+    }
+
+    return res;
 }
 
 std::vector<std::string> FileUtils::readLines(const std::string &fileName)

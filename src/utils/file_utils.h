@@ -15,7 +15,7 @@ public:
      *
      * @throw std::ifstream::failure on any failure during reading the file
      */
-    static std::string read(const std::string &fileName);
+    static std::string read(const std::string &fileName, bool ignoreEOLs = false);
 
     /**
      * @brief Reads the contents of a given filename and returns a vector of lines

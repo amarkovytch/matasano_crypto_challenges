@@ -13,8 +13,7 @@ class ByteData
 {
 public:
     /**
-     * Enum type for string encoding that is received as input in various functions
-     * or returned as output
+     * Enum type for string encoding that is received as input in various function or returned as output
      */
     enum class encoding
     {
@@ -24,15 +23,17 @@ public:
     };
 
     /**
-     * @brief Construct a new ByteData object from a string representation in
-     * a given encoding
+     * @brief Construct a new empty Byte Data object
+     */
+    ByteData() = default;
+
+    /**
+     * @brief Construct a new ByteData object from a string representation in a given encoding
      *
      * @param str data to construct the object from
      * @param strEnc data encoding
      *
-     * @throw std::invalid_argument if str is empty or does not correspond to given
-     * encoding, or bad encoding is given
-     * @throw std::runtime_error if encoding::base64 is used (currently unsupported)
+     * @throw std::invalid_argument if str is empty or does not correspond to given encoding, or bad encoding is given
      */
     ByteData(const std::string &str, encoding strEnc = encoding::hex);
 
@@ -71,23 +72,25 @@ public:
     ByteData &operator+=(const ByteData &rhs);
 
     /**
-     * @brief performs mathematical xor between two objects
-     * rhs is applied cyclically to lhs
+     * @brief performs mathematical xor between two objects rhs is applied cyclically to lhs
+     * Both ByteData objects should be not empty
      *
      * @param lhs the first argument
      * @param rhs the second argument
      *
      * @return the result of the described xor operation
+     * @throw std::invalid_argument if either of ByteData is empty
      */
     friend ByteData operator^(ByteData lhs, const ByteData &rhs);
 
     /**
-     * @brief performs mathematical xor between this object and the other one
-     * rhs is applied cyclically to lhs
+     * @brief performs mathematical xor between this object and the other one rhs is applied cyclically to lhs
+     * Both ByteData objects should be not empty
      *
      * @param rhs the other object to perform xor operation
      *
      * @return this object that holds the result of the described xor operation
+     * @throw std::invalid_argument if either of ByteData is empty
      */
     ByteData &operator^=(const ByteData &rhs);
 
@@ -117,20 +120,61 @@ public:
      *
      * @return true if objects do not hold the same data, false otherwise
      */
-    friend inline bool operator!=(const ByteData &lhs, const ByteData &rhs)
-    {
-        return !(lhs == rhs);
-    }
+    friend inline bool operator!=(const ByteData &lhs, const ByteData &rhs) { return !(lhs == rhs); }
 
     /**
      * @brief Return reference to the undelying data vector
      *
      * @return reference to the data vector
      */
-    inline std::vector<std::byte> const &data() const
-    {
-        return byteData;
-    }
+    inline std::vector<std::byte> const &data() const { return byteData; }
+
+    /**
+     * @brief Return size of underlying ByteData vector
+     *
+     * @return size of ByteData
+     */
+    inline std::size_t size() const { return byteData.size(); }
+
+    /**
+     * @brief Find hamming distance with another ByteData
+     *
+     * @param another ByteData to compute distance with. Should be the same length as this one
+     * @return double hamming distance normalized with the length of the byte data
+     *
+     * @throw std::invalid_argument if length of another is not equal to length of the current byte data
+     */
+    double hamming(const ByteData &another);
+
+    /**
+     * @brief Extract consequetive elements from byte data. Each 'elmsInRow' elements form one row. Stop after
+     * 'maxRows', 0 - for iterating the whole byte data. The last row could have less elements than elmsInRow
+     * This object should not be empty
+     *
+     * @param elmsInRow the number of bytes in one row (the maximum size of one ByteData in a vector). Should not be 0
+     * @param maxRows the maximum number of rows to extract, 0 for no maximum (the maximum size of a vector)
+     * @return vector of resulting rows of ByteData
+     *
+     * @throw std::invalid_argument if elmsInRow is 0, or this object is empty
+     */
+    std::vector<ByteData> extractRows(std::size_t elmsInRow, std::size_t maxRows = 0) const;
+
+    /**
+     * @brief Exctract each 'numColumns'-s element from byte data. For example if numColumns is 4 then this will be the
+     * resulting vector (numbers are indexes of the elements in the original byte data vector):
+     * {{0, 4, 8, ...}, {1, 5, 9, ...}, {2, 6, 10, ...}, {3, 7, 11, ...}}
+     * The maximum number of elements in column is defined by 'maxElmsInColumn', 0 for unlimited (iterate all original
+     * byte data vector)
+     * The last columns may have less elements than first columns
+     * This object should not be empty
+     *
+     * @param maxNumColumns the maximum number of columns to extract (the maximum size of a vector). Should not be 0.
+     * @param maxElmsInColumn the maximum size of one ByteData in a vector
+     * @return vector of resulting columns of ByteData
+     *
+     * @throw std::invalid_argument if numColumns is 0, or this object is empty
+     */
+    std::vector<ByteData> extractColumns(std::size_t maxNumColumns, std::size_t maxElmsInColumn = 0) const;
 
 private:
     /**
@@ -142,15 +186,33 @@ private:
      * @brief parses string data as hex. Should be called from constructor
      *
      * @param hex hex data
+     * @throw std::invalid_argument if hex string is not even size
      */
     void parseHex(const std::string &hex);
 
     /**
+     * @brief parses string data as hex. Should be called from parseHex
+     * The only difference from parseHex is that it can add to existing byte data
+     *
+     * @param hex hex data
+     * @throw std::invalid_argument if hex string is not even size
+     */
+    void parseHexInternal(const std::string &hex);
+
+    /**
      * @brief parses string data as plain. Should be called from constructor
      *
-     * @param plain hex data
+     * @param plain plain data
      */
     void parsePlain(const std::string &plain);
+
+    /**
+     * @brief parses string data as base64. Should be called from constructor
+     *
+     * @param base64 base64 data
+     * @throw std::invalid_argument if base64 string is not multiply of 4
+     */
+    void parseBase64(const std::string &base64);
 
     /**
      * @brief return string representation without any encoding
@@ -182,8 +244,7 @@ private:
      * @param result the result to store, it's size should be the same
      * as size of lhs
      */
-    static void xorVectors(const std::vector<std::byte> &lhs,
-                           const std::vector<std::byte> &rhs,
+    static void xorVectors(const std::vector<std::byte> &lhs, const std::vector<std::byte> &rhs,
                            std::vector<std::byte> &result);
 
     /**

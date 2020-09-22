@@ -1,24 +1,50 @@
 #include "byte_data.h"
 #include "gtest/gtest.h"
 
-TEST(ByteDataTest, ConstructorEmpty)
+TEST(ByteDataTest, ConstructorEmpty) { ASSERT_THROW(ByteData(""), std::invalid_argument); }
+
+TEST(ByteDataTest, ConstructorEmpty2) { ASSERT_THROW(ByteData(std::vector<std::byte>()), std::invalid_argument); }
+
+TEST(ByteDataTest, ConstructorWrongHex) { ASSERT_THROW(ByteData("a"), std::invalid_argument); }
+
+TEST(ByteDataTest, ConstructorWrongHex2) { ASSERT_THROW(ByteData("at"), std::invalid_argument); }
+
+TEST(ByteDataTest, ConstructWrongBase64)
 {
-    ASSERT_THROW(ByteData(""), std::invalid_argument);
+    ASSERT_THROW(ByteData("at", ByteData::encoding::base64), std::invalid_argument);
 }
 
-TEST(ByteDataTest, ConstructorEmpty2)
+TEST(ByteDataTest, ConstructWrongBase64_2)
 {
-    ASSERT_THROW(ByteData(std::vector<std::byte>()), std::invalid_argument);
+    ASSERT_THROW(ByteData("at9", ByteData::encoding::base64), std::invalid_argument);
 }
 
-TEST(ByteDataTest, ConstructorWrongHex)
+TEST(ByteDataTest, ConstructWrongBase64_3)
 {
-    ASSERT_THROW(ByteData("a"), std::invalid_argument);
+    ASSERT_THROW(ByteData("=at99", ByteData::encoding::base64), std::invalid_argument);
 }
 
-TEST(ByteDataTest, ConstructorWrongHex2)
+TEST(ByteDataTest, ConstructWrongBase64_4)
 {
-    ASSERT_THROW(ByteData("at"), std::invalid_argument);
+    ASSERT_THROW(ByteData("at=9", ByteData::encoding::base64), std::invalid_argument);
+}
+
+TEST(ByteDataTest, ConstructBase64)
+{
+    ByteData bd("EjRW", ByteData::encoding::base64);
+    ASSERT_EQ("123456", bd.str());
+}
+
+TEST(ByteDataTest, ConstructBase64OnePad)
+{
+    ByteData bd("EjRWeJA=", ByteData::encoding::base64);
+    ASSERT_EQ("1234567890", bd.str());
+}
+
+TEST(ByteDataTest, ConstructBase64TwoPad)
+{
+    ByteData bd("EjRWeA==", ByteData::encoding::base64);
+    ASSERT_EQ("12345678", bd.str());
 }
 
 TEST(ByteDataTest, StrPlain)
@@ -74,7 +100,6 @@ TEST(ByteDataTest, ConstructFromVector)
     vec.push_back(b);
 
     ByteData bd(vec);
-    ASSERT_EQ("AAA", bd.str(ByteData::encoding::plain));
 }
 
 TEST(ByteDataTest, DataTest)
@@ -92,16 +117,14 @@ TEST(ByteDataTest, DataTest)
 
 TEST(ByteDataTest, OperatorPlus)
 {
-    ByteData b = ByteData("123", ByteData::encoding::plain) +
-                 ByteData("456", ByteData::encoding::plain);
+    ByteData b = ByteData("123", ByteData::encoding::plain) + ByteData("456", ByteData::encoding::plain);
 
     ASSERT_EQ("123456", b.str(ByteData::encoding::plain));
 }
 
 TEST(ByteDataTest, OperatorPlusEq)
 {
-    ByteData b = ByteData("123", ByteData::encoding::plain) +
-                 ByteData("456", ByteData::encoding::plain);
+    ByteData b = ByteData("123", ByteData::encoding::plain) + ByteData("456", ByteData::encoding::plain);
 
     b += ByteData("789", ByteData::encoding::plain);
 
@@ -186,4 +209,159 @@ TEST(ByteDataTest, OperatorEquals)
 
     ASSERT_TRUE(b1 == b2);
     ASSERT_FALSE(b1 != b2);
+}
+
+TEST(ByteDataTest, HammingIllegal)
+{
+    ByteData b1("1234");
+    ByteData b2("12");
+
+    ASSERT_THROW(b1.hamming(b2), std::invalid_argument);
+}
+
+TEST(ByteDataTest, HammingTestSelf)
+{
+    ByteData b1("1234");
+    ByteData b2("1234");
+
+    ASSERT_EQ(0.0, b1.hamming(b2));
+}
+
+TEST(ByteDataTest, HammingTestMax)
+{
+    ByteData b1("FFFF");
+    ByteData b2("0000");
+
+    ASSERT_EQ(8.0, b1.hamming(b2));
+}
+
+TEST(ByteDataTest, HammingTestWokka)
+{
+    ByteData b1("this is a test", ByteData::encoding::plain);
+    ByteData b2("wokka wokka!!!", ByteData::encoding::plain);
+
+    ASSERT_EQ(37.0 / 14.0, b1.hamming(b2));
+}
+
+// std::vector<ByteData> extractRows(std::size_t elmsInRow, std::size_t maxRows = 0);
+TEST(ByteDataTest, ExtractRowsElmsZero)
+{
+    std::vector vec{std::byte{1}, std::byte{2}, std::byte{3}, std::byte{4}, std::byte{5},
+                    std::byte{6}, std::byte{7}, std::byte{8}, std::byte{9}, std::byte{10}};
+
+    ByteData bd(vec);
+    ASSERT_THROW(bd.extractRows(0), std::invalid_argument);
+}
+
+TEST(ByteDataTest, ExtractRowsSanity)
+{
+    ByteData bd("1234567890", ByteData::encoding::plain);
+    auto rows = bd.extractRows(5);
+
+    ASSERT_EQ(2, rows.size());
+    ASSERT_EQ("12345", rows.at(0).str(ByteData::encoding::plain));
+    ASSERT_EQ("67890", rows.at(1).str(ByteData::encoding::plain));
+}
+
+TEST(ByteDataTest, ExtractRowsSanityMaxRows)
+{
+    ByteData bd("1234567890", ByteData::encoding::plain);
+    auto rows = bd.extractRows(5, 2);
+
+    ASSERT_EQ(2, rows.size());
+    ASSERT_EQ("12345", rows.at(0).str(ByteData::encoding::plain));
+    ASSERT_EQ("67890", rows.at(1).str(ByteData::encoding::plain));
+
+    auto rows2 = bd.extractRows(5, 10);
+    ASSERT_EQ(rows, rows2);
+
+    auto rows3 = bd.extractRows(5, 1);
+    ASSERT_EQ(1, rows3.size());
+    ASSERT_EQ("12345", rows3.at(0).str(ByteData::encoding::plain));
+}
+
+TEST(ByteDataTest, ExtractRowsLargeMaxRows)
+{
+    ByteData bd("1234567890", ByteData::encoding::plain);
+    auto rows = bd.extractRows(7, 0);
+
+    ASSERT_EQ(2, rows.size());
+    ASSERT_EQ("1234567", rows.at(0).str(ByteData::encoding::plain));
+    ASSERT_EQ("890", rows.at(1).str(ByteData::encoding::plain));
+
+    rows = bd.extractRows(10, 0);
+    ASSERT_EQ(1, rows.size());
+    ASSERT_EQ("1234567890", rows.at(0).str(ByteData::encoding::plain));
+
+    rows = bd.extractRows(100, 0);
+    ASSERT_EQ(1, rows.size());
+    ASSERT_EQ("1234567890", rows.at(0).str(ByteData::encoding::plain));
+}
+
+TEST(ByteDataTest, ExtractColumnsZero)
+{
+    std::vector vec{std::byte{1}, std::byte{2}, std::byte{3}, std::byte{4}, std::byte{5},
+                    std::byte{6}, std::byte{7}, std::byte{8}, std::byte{9}, std::byte{10}};
+
+    ByteData bd(vec);
+    ASSERT_THROW(bd.extractColumns(0), std::invalid_argument);
+}
+
+TEST(ByteDataTest, ExtractColsSanity)
+{
+    ByteData bd("1234567890", ByteData::encoding::plain);
+    auto cols = bd.extractColumns(2);
+
+    ASSERT_EQ(2, cols.size());
+    ASSERT_EQ("13579", cols.at(0).str(ByteData::encoding::plain));
+    ASSERT_EQ("24680", cols.at(1).str(ByteData::encoding::plain));
+}
+
+TEST(ByteDataTest, ExtractColsSanityMaxRows)
+{
+    ByteData bd("1234567890", ByteData::encoding::plain);
+    auto cols = bd.extractColumns(2, 5);
+
+    ASSERT_EQ(2, cols.size());
+    ASSERT_EQ("13579", cols.at(0).str(ByteData::encoding::plain));
+    ASSERT_EQ("24680", cols.at(1).str(ByteData::encoding::plain));
+
+    auto cols2 = bd.extractColumns(2, 20);
+    ASSERT_EQ(cols, cols2);
+
+    auto cols3 = bd.extractColumns(2, 4);
+    ASSERT_EQ(2, cols3.size());
+    ASSERT_EQ("1357", cols3.at(0).str(ByteData::encoding::plain));
+    ASSERT_EQ("2468", cols3.at(1).str(ByteData::encoding::plain));
+}
+
+TEST(ByteDataTest, ExtractColsLargeMaxCols)
+{
+    ByteData bd("1234567890", ByteData::encoding::plain);
+    auto cols = bd.extractColumns(7, 0);
+
+    ASSERT_EQ(7, cols.size());
+    ASSERT_EQ("18", cols.at(0).str(ByteData::encoding::plain));
+    ASSERT_EQ("29", cols.at(1).str(ByteData::encoding::plain));
+    ASSERT_EQ("30", cols.at(2).str(ByteData::encoding::plain));
+    ASSERT_EQ("4", cols.at(3).str(ByteData::encoding::plain));
+    ASSERT_EQ("5", cols.at(4).str(ByteData::encoding::plain));
+    ASSERT_EQ("6", cols.at(5).str(ByteData::encoding::plain));
+    ASSERT_EQ("7", cols.at(6).str(ByteData::encoding::plain));
+
+    cols = bd.extractColumns(10, 0);
+    ASSERT_EQ(10, cols.size());
+    ASSERT_EQ("1", cols.at(0).str(ByteData::encoding::plain));
+    ASSERT_EQ("2", cols.at(1).str(ByteData::encoding::plain));
+    ASSERT_EQ("3", cols.at(2).str(ByteData::encoding::plain));
+    ASSERT_EQ("4", cols.at(3).str(ByteData::encoding::plain));
+    ASSERT_EQ("5", cols.at(4).str(ByteData::encoding::plain));
+    ASSERT_EQ("6", cols.at(5).str(ByteData::encoding::plain));
+    ASSERT_EQ("7", cols.at(6).str(ByteData::encoding::plain));
+    ASSERT_EQ("8", cols.at(7).str(ByteData::encoding::plain));
+    ASSERT_EQ("9", cols.at(8).str(ByteData::encoding::plain));
+    ASSERT_EQ("0", cols.at(9).str(ByteData::encoding::plain));
+
+    auto cols2 = bd.extractColumns(100, 0);
+    ASSERT_EQ(cols2, cols);
 }

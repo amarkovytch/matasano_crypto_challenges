@@ -16,9 +16,9 @@ int main()
     std::string resultString = cipheredStrings.at(0);
     auto resultDecipher = std::make_tuple(std::string(), std::byte{0}, std::numeric_limits<double>::max());
 
-    for (auto cipheredString : cipheredStrings)
+    for (auto const &cipheredString : cipheredStrings)
     {
-        auto candidateDecipher = decryptor.decipher(cipheredString);
+        auto candidateDecipher = decryptor.decipherSingle(cipheredString);
         if (std::get<2>(candidateDecipher) < std::get<2>(resultDecipher))
         {
             resultDecipher = candidateDecipher;
