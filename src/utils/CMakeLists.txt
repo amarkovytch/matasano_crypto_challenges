@@ -1,3 +1,7 @@
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+find_package(BOTAN REQUIRED)
+include_directories(${BOTAN_INCLUDE_DIRS})
+
 file(GLOB_RECURSE source_list "*.cpp" "*.hpp")
 
 # Create a library called "utils" which includes the source file "utils.cpp".

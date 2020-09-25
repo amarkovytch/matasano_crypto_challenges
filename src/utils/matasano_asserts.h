@@ -21,6 +21,13 @@
     THROW_IF((str1) != (str2), str1 + " is not equal to " + str2 + FILE_LINE, std::runtime_error);
 
 /**
+ * @brief Throws runtime_error exception if 2 given strings are not equal.
+ * Used to validate expected output in exercises
+ */
+#define VALIDATE_NOT_NULL(val)                                                                                         \
+    THROW_IF((val) == nullptr, std::string(#val) + " is null" + FILE_LINE, std::runtime_error);
+
+/**
  * @brief Throws std::logic_error if given condition is violated
  * Used to validate internal logic
  */
