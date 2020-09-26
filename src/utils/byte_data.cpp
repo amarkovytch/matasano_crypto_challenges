@@ -129,6 +129,50 @@ ByteData &ByteData::operator^=(const ByteData &rhs)
     return *this;
 }
 
+bool ByteData::eqCyclically(const ByteData &other) const
+{
+    if (size() >= other.size())
+    {
+        return eqCyclicallyInternal(*this, other);
+    }
+    else
+    {
+        return eqCyclicallyInternal(other, *this);
+    }
+}
+
+bool ByteData::eqCyclicallyInternal(const ByteData &lhs, const ByteData &rhs) const
+{
+    LOGIC_ASSERT(lhs.size() >= rhs.size());
+
+    // means that rhs size is also 0
+    if (lhs.size() == 0)
+    {
+        return true;
+    }
+
+    // here lhs size is not 0
+    if (rhs.size() == 0)
+    {
+        return false;
+    }
+
+    if (lhs.size() % rhs.size() != 0)
+    {
+        return false;
+    }
+
+    for (std::size_t i = 0; i < lhs.size(); i++)
+    {
+        if (lhs.data().at(i) != rhs.data().at(i % rhs.size()))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void ByteData::xorVectors(const std::vector<std::byte> &lhs, const std::vector<std::byte> &rhs,
                           std::vector<std::byte> &result)
 {
@@ -217,24 +261,6 @@ std::string ByteData::strBase64() const
     }
 
     return result;
-}
-
-bool operator==(const ByteData &lhs, const ByteData &rhs)
-{
-    if (lhs.byteData.size() != lhs.byteData.size())
-    {
-        return false;
-    }
-
-    for (std::size_t i = 0; i < lhs.byteData.size(); i++)
-    {
-        if (lhs.byteData[i] != rhs.byteData[i])
-        {
-            return false;
-        }
-    }
-
-    return true;
 }
 
 double ByteData::hamming(const ByteData &another)

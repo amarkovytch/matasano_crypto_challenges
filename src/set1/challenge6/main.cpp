@@ -19,4 +19,6 @@ int main()
 
     std::cout << "The deciphered result is: " << std::endl << decipher << std::endl;
     std::cout << "The key is: " << key.str(ByteData::encoding::plain) << std::endl;
+
+    return 0;
 }

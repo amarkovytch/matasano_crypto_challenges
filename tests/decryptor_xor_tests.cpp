@@ -150,21 +150,21 @@ TEST_F(DecryptorXorTest, DecryptEnglishTextMultiXorTestKeySizes)
 
     auto [retultStr, resultCipher, ignore] = decryptor->decipherMulti(cipherText, std::pair(2, 10));
     ASSERT_EQ(englishText, retultStr);
-    ASSERT_EQ(cipher, resultCipher);
+    ASSERT_TRUE(cipher.eqCyclically(resultCipher));
 
     cipher = ByteData{"33343536", ByteData::encoding::hex};
     cipherText = ByteData(englishText, ByteData::encoding::plain) ^ cipher;
 
     std::tie(retultStr, resultCipher, ignore) = decryptor->decipherMulti(cipherText, std::pair(2, 10));
     ASSERT_EQ(englishText, retultStr);
-    ASSERT_EQ(cipher, resultCipher);
+    ASSERT_TRUE(cipher.eqCyclically(resultCipher));
 
     cipher = ByteData{"1234567890", ByteData::encoding::plain};
     cipherText = ByteData(englishText, ByteData::encoding::plain) ^ cipher;
 
     std::tie(retultStr, resultCipher, ignore) = decryptor->decipherMulti(cipherText, std::pair(2, 10));
     ASSERT_EQ(englishText, retultStr);
-    ASSERT_EQ(cipher, resultCipher);
+    ASSERT_TRUE(cipher.eqCyclically(resultCipher));
 }
 
 TEST_F(DecryptorXorTest, CheckConfidenceMultiXor)
@@ -184,7 +184,7 @@ TEST_F(DecryptorXorTest, CheckConfidenceMultiXor)
     auto [ignore1, ignore2, confidenceGibrish] = decryptor->decipherMulti(cipherGibrish, std::pair(2, 10));
 
     ASSERT_EQ(englishText, retultStr);
-    ASSERT_EQ(cipher, resultCipher);
+    ASSERT_TRUE(cipher.eqCyclically(resultCipher));
 
     ASSERT_LT(confidenceEnglish, confidenceGibrish);
 }

@@ -20,8 +20,7 @@ double ByteDistribution::distance(const ByteDistribution &anotherDistribution) c
     auto anotherEnd = anotherDistribution.distributionMap.end();
     double result = 0;
 
-    while (iteratorThis != thisEnd &&
-           iteratorAnother != anotherEnd)
+    while (iteratorThis != thisEnd && iteratorAnother != anotherEnd)
     {
         if (iteratorThis->first < iteratorAnother->first)
         {

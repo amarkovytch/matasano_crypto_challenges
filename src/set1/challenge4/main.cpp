@@ -30,4 +30,6 @@ int main()
     std::cout << "The ciphered string was: " << resultString << std::endl;
     std::cout << "The deciphered result is: " << decipher << std::endl;
     std::cout << "The key is: " << std::to_integer<unsigned int>(key) << std::endl;
+
+    return 0;
 }

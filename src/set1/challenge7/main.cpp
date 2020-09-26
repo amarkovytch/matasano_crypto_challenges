@@ -29,4 +29,6 @@ int main()
                            new CryptoPP::StreamTransformationFilter(dec, new CryptoPP::StringSink(deciphered)));
 
     std::cout << "The deciphered result is: " << std::endl << deciphered << std::endl;
+
+    return 0;
 }

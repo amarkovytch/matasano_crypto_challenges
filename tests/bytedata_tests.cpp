@@ -206,9 +206,16 @@ TEST(ByteDataTest, OperatorEquals)
 {
     ByteData b1("1234");
     ByteData b2("1234");
+    ByteData b3("12");
 
     ASSERT_TRUE(b1 == b2);
     ASSERT_FALSE(b1 != b2);
+
+    ASSERT_TRUE(b1 != b3);
+    ASSERT_FALSE(b1 == b3);
+
+    ASSERT_TRUE(b3 != b1);
+    ASSERT_FALSE(b3 == b1);
 }
 
 TEST(ByteDataTest, HammingIllegal)
@@ -364,4 +371,36 @@ TEST(ByteDataTest, ExtractColsLargeMaxCols)
 
     auto cols2 = bd.extractColumns(100, 0);
     ASSERT_EQ(cols2, cols);
+}
+
+TEST(ByteDataTest, EqCyclicallyBothZero) { ASSERT_TRUE(ByteData().eqCyclically(ByteData())); }
+
+TEST(ByteDataTest, EqCyclicallyOneZero)
+{
+    ByteData b("1234");
+    ASSERT_FALSE(b.eqCyclically(ByteData()));
+
+    ASSERT_FALSE(ByteData().eqCyclically(b));
+}
+
+TEST(ByteDataTest, EqCyclically)
+{
+    ByteData b1("123", ByteData::encoding::plain);
+    ByteData b2("123123123", ByteData::encoding::plain);
+    ByteData b3("1231231231", ByteData::encoding::plain);
+
+    ASSERT_TRUE(b1.eqCyclically(b2));
+    ASSERT_TRUE(b2.eqCyclically(b1));
+    ASSERT_FALSE(b1.eqCyclically(b3));
+    ASSERT_FALSE(b3.eqCyclically(b1));
+}
+
+TEST(ByteDataTest, EqCyclicallyEqual)
+{
+    ByteData b1("123", ByteData::encoding::plain);
+    ByteData b2("123", ByteData::encoding::plain);
+
+    ASSERT_TRUE(b1.eqCyclically(b2));
+    ASSERT_TRUE(b2.eqCyclically(b1));
+    ASSERT_TRUE(b1.eqCyclically(b1));
 }

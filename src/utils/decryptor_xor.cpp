@@ -49,10 +49,21 @@ DecryptorXor::decipherMulti(const ByteData &cipheredData, const std::pair<std::s
     auto result = std::make_tuple(std::string(), ByteData(), std::numeric_limits<double>::max());
     for (auto keySize : keySizes)
     {
-        auto curDecipher = decipherMultiKeySize(cipheredData, keySize);
-        if (std::get<2>(curDecipher) < std::get<2>(result))
+        auto [curDecipher, currKey, currConfidence] = decipherMultiKeySize(cipheredData, keySize);
+        if (currConfidence <= std::get<2>(result))
         {
-            result = curDecipher;
+            // the keys of keys that are multiple of the original key, always prefer the smaller one
+            if (currConfidence == std::get<2>(result))
+            {
+                if (currKey.size() < std::get<1>(result).size())
+                {
+                    result = std::make_tuple(curDecipher, currKey, currConfidence);
+                }
+            }
+            else
+            {
+                result = std::make_tuple(curDecipher, currKey, currConfidence);
+            }
         }
     }
 
@@ -94,7 +105,7 @@ std::vector<std::size_t> DecryptorXor::guessKeySize(const ByteData &cipheredData
 
         for (std::size_t i = 0; i < rows.size(); i++)
         {
-            currHamming += rows[i].hamming(rows[(i + 1) % rows.size()]) * hammingIncr;
+            currHamming += rows.at(i).hamming(rows.at((i + 1) % rows.size())) * hammingIncr;
         }
 
         bestKeys.push(std::make_pair(tryKeySize, currHamming));

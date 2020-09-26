@@ -1,6 +1,7 @@
 #ifndef MATASANO_BYTE_DATA_H
 #define MATASANO_BYTE_DATA_H
 
+#include <compare>
 #include <cstddef>
 #include <map>
 #include <string>
@@ -103,24 +104,24 @@ public:
     std::string str(encoding strEnc = encoding::hex) const;
 
     /**
-     * @brief checks whether two given ByteData objects hold identical data
-     *
-     * @param lhs the first argument
-     * @param rhs the second argument
-     *
-     * @return true if objects hold the same data, false otherwise
+     * @brief auto generated three-way-comparison operator
      */
-    friend bool operator==(const ByteData &lhs, const ByteData &rhs);
+    auto operator<=>(const ByteData &) const = default;
 
     /**
-     * @brief checks whether two given ByteData objects do not hold identical data
+     * @brief returns true if this Bytdata is equal 'cyclically' to the other one
+     * Cyclically equal means that either this data appears in other cyclically, or vice vesrsa
+     * For example :
+     * {1, 2, 3}                   eqCyclically {1, 2, 3, 1, 2, 3, 1, 2, 3}    ==  true
+     * {1, 2, 3, 1, 2, 3, 1, 2, 3} eqCyclically {1, 2, 3}                      ==  true
+     * {1, 2, 3}                   eqCyclically {1, 2, 3, 1, 2, 3, 1, 2, 3, 1} ==  false
      *
-     * @param lhs the first argument
-     * @param rhs the second argument
+     * For 2 empty vectors the result is true. When one vector is empty and the other is not - result is false
      *
-     * @return true if objects do not hold the same data, false otherwise
+     * @param other Other Bytedata to compare with
+     * @return true if this and other ByteData are equall cyclically
      */
-    friend inline bool operator!=(const ByteData &lhs, const ByteData &rhs) { return !(lhs == rhs); }
+    bool eqCyclically(const ByteData &other) const;
 
     /**
      * @brief Return reference to the undelying data vector
@@ -266,6 +267,15 @@ private:
      * @return string
      */
     std::string strHexInternal(std::size_t start, std::size_t end) const;
+
+    /**
+     * @brief same as @eqCyclically but assumes lhs bigger or equal to rhs
+     *
+     * @param lhs left ByteData to compare (should be bigger or equal)
+     * @param rhs right ByteData to compare
+     * @return true if lhs and rhs ByteData are equall cyclically
+     */
+    bool eqCyclicallyInternal(const ByteData &lhs, const ByteData &rhs) const;
 };
 
 #endif

@@ -15,4 +15,6 @@ int main()
     auto [resultStr, resultCipher, ignore] = decryptor.decipherSingle(CIPHERED_TEXT);
     std::cout << "The text is: " << resultStr << std::endl;
     std::cout << "The cipher byte was: " << std::to_integer<unsigned int>(resultCipher) << std::endl;
+
+    return 0;
 }

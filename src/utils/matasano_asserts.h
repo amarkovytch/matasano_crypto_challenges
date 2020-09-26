@@ -28,6 +28,18 @@
     THROW_IF((val) == nullptr, std::string(#val) + " is null" + FILE_LINE, std::runtime_error);
 
 /**
+ * @brief Throws runtime_error exception if val is false
+ * Used to validate expected output in exercises
+ */
+#define VALIDATE_TRUE(val) THROW_IF(!(val), std::string(#val) + " is false" + FILE_LINE, std::runtime_error);
+
+/**
+ * @brief Throws runtime_error exception if val is true
+ * Used to validate expected output in exercises
+ */
+#define VALIDATE_FALSE(val) VALIDATE_TRUE(!(val))
+
+/**
  * @brief Throws std::logic_error if given condition is violated
  * Used to validate internal logic
  */
