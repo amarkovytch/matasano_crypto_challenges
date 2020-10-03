@@ -24,7 +24,7 @@ static const std::string LORD_OF_THE_RING_PART =
 
 int main()
 {
-    auto result = ByteData(INPUT, ByteData::encoding::plain) ^ ByteData(KEY, ByteData::encoding::plain);
+    auto result = ByteData(INPUT, ByteData::Encoding::plain) ^ ByteData(KEY, ByteData::Encoding::plain);
 
     VALIDATE_EQ(OUTPUT, result.str());
 
@@ -35,8 +35,8 @@ int main()
     std::cout << LORD_OF_THE_RING_PART << std::endl;
     std::cout << std::endl;
     std::cout << "Result:" << std::endl;
-    std::cout << (ByteData(LORD_OF_THE_RING_PART, ByteData::encoding::plain) ^ ByteData(KEY, ByteData::encoding::plain))
-                     .str(ByteData::encoding::plain)
+    std::cout << (ByteData(LORD_OF_THE_RING_PART, ByteData::Encoding::plain) ^ ByteData(KEY, ByteData::Encoding::plain))
+                     .str(ByteData::Encoding::plain)
               << std::endl;
 
     auto passwd = FileUtils::read("/etc/passwd");
@@ -44,8 +44,8 @@ int main()
     std::cout << passwd << std::endl;
     std::cout << std::endl;
     std::cout << "Encypted result:" << std::endl;
-    std::cout << (ByteData(passwd, ByteData::encoding::plain) ^ ByteData(KEY, ByteData::encoding::plain))
-                     .str(ByteData::encoding::plain)
+    std::cout << (ByteData(passwd, ByteData::Encoding::plain) ^ ByteData(KEY, ByteData::Encoding::plain))
+                     .str(ByteData::Encoding::plain)
               << std::endl;
 
     return 0;

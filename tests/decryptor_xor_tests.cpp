@@ -22,7 +22,7 @@ std::shared_ptr<DecryptorXor> DecryptorXorTest::decryptor = nullptr;
 TEST_F(DecryptorXorTest, TrivialCaseSingleXor)
 {
     std::string trivialStr = "Trivial test";
-    ByteData trivialBD(trivialStr, ByteData::encoding::plain);
+    ByteData trivialBD(trivialStr, ByteData::Encoding::plain);
     DecryptorXor trivial(trivialStr);
 
     auto [retultStr, resultCipher, ignore] = trivial.decipherSingle(trivialBD);
@@ -35,7 +35,7 @@ TEST_F(DecryptorXorTest, AlmostTrivialCaseSingleXor)
     std::string trivialStr = "Almost Trivial test";
     std::byte cipher{33};
 
-    ByteData triviallyCipheredBD = ByteData(trivialStr, ByteData::encoding::plain) ^ cipher;
+    ByteData triviallyCipheredBD = ByteData(trivialStr, ByteData::Encoding::plain) ^ cipher;
     DecryptorXor trivial(trivialStr);
 
     auto [retultStr, resultCipher, ignore] = trivial.decipherSingle(triviallyCipheredBD);
@@ -50,7 +50,7 @@ TEST_F(DecryptorXorTest, DecryptEnglishTextSingleXor)
                               "English lessons in Soviet school were very good ! I Learned very good English !";
 
     std::byte cipher{89};
-    ByteData cipherText = ByteData(englishText, ByteData::encoding::plain) ^ cipher;
+    ByteData cipherText = ByteData(englishText, ByteData::Encoding::plain) ^ cipher;
 
     auto [retultStr, resultCipher, ignore] = decryptor->decipherSingle(cipherText);
     ASSERT_EQ(englishText, retultStr);
@@ -67,8 +67,8 @@ TEST_F(DecryptorXorTest, CheckConfidenceSingleXor)
         "a sdjfk ajsdfgi kaljsfhaskl;jdfh lsdjkghlskdjfghslkfjdglaksjdf;lwiru5 tow48uy5nh bvskjdfhgasdfg";
 
     std::byte cipher{89};
-    ByteData cipherEnglishText = ByteData(englishText, ByteData::encoding::plain) ^ cipher;
-    ByteData cipherGibrish = ByteData(gibrishText, ByteData::encoding::plain) ^ cipher;
+    ByteData cipherEnglishText = ByteData(englishText, ByteData::Encoding::plain) ^ cipher;
+    ByteData cipherGibrish = ByteData(gibrishText, ByteData::Encoding::plain) ^ cipher;
 
     auto [retultStr, resultCipher, confidenceEnglish] = decryptor->decipherSingle(cipherEnglishText);
     auto [ignore1, ignore2, confidenceGibrish] = decryptor->decipherSingle(cipherGibrish);
@@ -88,9 +88,9 @@ TEST_F(DecryptorXorTest, WrongRangeMultiXor)
 TEST_F(DecryptorXorTest, AlmostTrivialCaseMultiXor)
 {
     std::string trivialStr = "Almost Trivial test";
-    ByteData cipher{"3334", ByteData::encoding::hex};
+    ByteData cipher{"3334", ByteData::Encoding::hex};
 
-    ByteData triviallyCipheredBD = ByteData(trivialStr, ByteData::encoding::plain) ^ cipher;
+    ByteData triviallyCipheredBD = ByteData(trivialStr, ByteData::Encoding::plain) ^ cipher;
     DecryptorXor trivial(trivialStr);
 
     auto [retultStr, resultCipher, ignore] = trivial.decipherMulti(triviallyCipheredBD, std::pair(2, 5));
@@ -104,8 +104,8 @@ TEST_F(DecryptorXorTest, DecryptEnglishTextMultiXor)
                               "My sister goes to school. I go to school as well. I love to learn English very much !"
                               "English lessons in Soviet school were very good ! I Learned very good English !";
 
-    ByteData cipher{"333435", ByteData::encoding::hex};
-    ByteData cipherText = ByteData(englishText, ByteData::encoding::plain) ^ cipher;
+    ByteData cipher{"333435", ByteData::Encoding::hex};
+    ByteData cipherText = ByteData(englishText, ByteData::Encoding::plain) ^ cipher;
 
     auto [retultStr, resultCipher, ignore] = decryptor->decipherMulti(cipherText, std::pair(2, 20));
     ASSERT_EQ(englishText, retultStr);
@@ -118,8 +118,8 @@ TEST_F(DecryptorXorTest, DecryptEnglishTextMultiXorTestRanges)
                               "My sister goes to school. I go to school as well. I love to learn English very much !"
                               "English lessons in Soviet school were very good ! I Learned very good English !";
 
-    ByteData cipher{"333435", ByteData::encoding::hex};
-    ByteData cipherText = ByteData(englishText, ByteData::encoding::plain) ^ cipher;
+    ByteData cipher{"333435", ByteData::Encoding::hex};
+    ByteData cipherText = ByteData(englishText, ByteData::Encoding::plain) ^ cipher;
 
     auto [retultStr, resultCipher, ignore] = decryptor->decipherMulti(cipherText, std::pair(2, 10));
     ASSERT_EQ(englishText, retultStr);
@@ -145,22 +145,22 @@ TEST_F(DecryptorXorTest, DecryptEnglishTextMultiXorTestKeySizes)
         "a \" Crypto 101 \" thing.But more people \" know how \" to break it than can actually break it,"
         "and a similar technique breaks something much more important.";
 
-    ByteData cipher{"333435", ByteData::encoding::hex};
-    ByteData cipherText = ByteData(englishText, ByteData::encoding::plain) ^ cipher;
+    ByteData cipher{"333435", ByteData::Encoding::hex};
+    ByteData cipherText = ByteData(englishText, ByteData::Encoding::plain) ^ cipher;
 
     auto [retultStr, resultCipher, ignore] = decryptor->decipherMulti(cipherText, std::pair(2, 10));
     ASSERT_EQ(englishText, retultStr);
     ASSERT_TRUE(cipher.eqCyclically(resultCipher));
 
-    cipher = ByteData{"33343536", ByteData::encoding::hex};
-    cipherText = ByteData(englishText, ByteData::encoding::plain) ^ cipher;
+    cipher = ByteData{"33343536", ByteData::Encoding::hex};
+    cipherText = ByteData(englishText, ByteData::Encoding::plain) ^ cipher;
 
     std::tie(retultStr, resultCipher, ignore) = decryptor->decipherMulti(cipherText, std::pair(2, 10));
     ASSERT_EQ(englishText, retultStr);
     ASSERT_TRUE(cipher.eqCyclically(resultCipher));
 
-    cipher = ByteData{"1234567890", ByteData::encoding::plain};
-    cipherText = ByteData(englishText, ByteData::encoding::plain) ^ cipher;
+    cipher = ByteData{"1234567890", ByteData::Encoding::plain};
+    cipherText = ByteData(englishText, ByteData::Encoding::plain) ^ cipher;
 
     std::tie(retultStr, resultCipher, ignore) = decryptor->decipherMulti(cipherText, std::pair(2, 10));
     ASSERT_EQ(englishText, retultStr);
@@ -176,9 +176,9 @@ TEST_F(DecryptorXorTest, CheckConfidenceMultiXor)
     std::string gibrishText =
         "a sdjfk ajsdfgi kaljsfhaskl;jdfh lsdjkghlskdjfghslkfjdglaksjdf;lwiru5 tow48uy5nh bvskjdfhgasdfg";
 
-    ByteData cipher("89909192", ByteData::encoding::hex);
-    ByteData cipherEnglishText = ByteData(englishText, ByteData::encoding::plain) ^ cipher;
-    ByteData cipherGibrish = ByteData(gibrishText, ByteData::encoding::plain) ^ cipher;
+    ByteData cipher("89909192", ByteData::Encoding::hex);
+    ByteData cipherEnglishText = ByteData(englishText, ByteData::Encoding::plain) ^ cipher;
+    ByteData cipherGibrish = ByteData(gibrishText, ByteData::Encoding::plain) ^ cipher;
 
     auto [retultStr, resultCipher, confidenceEnglish] = decryptor->decipherMulti(cipherEnglishText, std::pair(2, 10));
     auto [ignore1, ignore2, confidenceGibrish] = decryptor->decipherMulti(cipherGibrish, std::pair(2, 10));

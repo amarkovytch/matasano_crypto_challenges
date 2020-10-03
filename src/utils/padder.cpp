@@ -1,13 +1,55 @@
-#include "padder.h"
-#include "byte_data.h"
+#include <span>
 
-ByteData Padder::pad(const ByteData &b, std::uint8_t bytesNumToPad)
+#include "byte_data.h"
+#include "matasano_asserts.h"
+#include "padder.h"
+
+ByteData Padder::pad(const ByteData &data, std::uint8_t bytesNumToPad)
 {
-    ByteData result = b;
-    for (std::uint8_t i = 0; i < bytesNumToPad; i++)
+    std::vector pad(bytesNumToPad, std::byte{bytesNumToPad});
+    return data + pad;
+}
+
+ByteData Padder::padToBlockSize(const ByteData &unpaddedBlock, std::uint8_t blockSize)
+{
+    THROW_IF(unpaddedBlock.size() > blockSize,
+             "the size of the block " + std::to_string(unpaddedBlock.size()) +
+                 " is bigger than size of the blocksize " + std::to_string(blockSize),
+             std::invalid_argument);
+
+    std::uint8_t bytesNumToPad = blockSize - unpaddedBlock.size();
+    if (0 == bytesNumToPad)
     {
-        result += std::byte{bytesNumToPad};
+        bytesNumToPad = blockSize;
     }
 
-    return result;
+    return pad(unpaddedBlock, bytesNumToPad);
+}
+
+ByteData Padder::removePadding(const ByteData &paddedBlock)
+{
+    if (paddedBlock.size() == 0)
+    {
+        return paddedBlock;
+    }
+
+    std::uint8_t bytesToRemove = std::to_integer<std::uint8_t>(paddedBlock.data().back());
+
+    THROW_IF(bytesToRemove > paddedBlock.size(),
+             "the padding is wrong, there are " + std::to_string(bytesToRemove) +
+                 " bytes to be removed, which is more than the total size of the block:" +
+                 std::to_string(paddedBlock.size()),
+             std::invalid_argument);
+
+    validatePadding(paddedBlock, bytesToRemove);
+
+    return paddedBlock.subData(0, paddedBlock.size() - bytesToRemove);
+}
+
+void Padder::validatePadding(const ByteData &paddedBlock, std::uint8_t padByte)
+{
+    for (std::size_t i = paddedBlock.size() - padByte; i < paddedBlock.size(); i++)
+    {
+        THROW_IF(paddedBlock.data().at(i) != std::byte{padByte}, "the padding is wrong", std::invalid_argument);
+    }
 }

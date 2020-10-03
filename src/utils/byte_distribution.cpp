@@ -8,16 +8,16 @@ ByteDistribution::ByteDistribution(const ByteData &byteData)
 
     for (auto b : bytes)
     {
-        distributionMap[b] += one_elm_percentage;
+        distributionMap_[b] += one_elm_percentage;
     }
 }
 
 double ByteDistribution::distance(const ByteDistribution &anotherDistribution) const
 {
-    auto iteratorThis = distributionMap.begin();
-    auto iteratorAnother = anotherDistribution.distributionMap.begin();
-    auto thisEnd = distributionMap.end();
-    auto anotherEnd = anotherDistribution.distributionMap.end();
+    auto iteratorThis = distributionMap_.begin();
+    auto iteratorAnother = anotherDistribution.distributionMap_.begin();
+    auto thisEnd = distributionMap_.end();
+    auto anotherEnd = anotherDistribution.distributionMap_.end();
     double result = 0;
 
     while (iteratorThis != thisEnd && iteratorAnother != anotherEnd)

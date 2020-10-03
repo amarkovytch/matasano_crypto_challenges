@@ -6,7 +6,7 @@
 #include <tuple>
 
 DecryptorXor::DecryptorXor(const std::string &referenceLanguageData)
-    : referenceLanguage(ByteDistribution(ByteData(referenceLanguageData, ByteData::encoding::plain)))
+    : referenceLanguage_(ByteDistribution(ByteData(referenceLanguageData, ByteData::Encoding::plain)))
 {
 }
 
@@ -32,7 +32,7 @@ std::tuple<std::string, std::byte, double> DecryptorXor::decipherSingle(const By
 
     } while (++curKey != 0);
 
-    return std::make_tuple(std::get<0>(candidate).str(ByteData::encoding::plain), std::get<1>(candidate),
+    return std::make_tuple(std::get<0>(candidate).str(ByteData::Encoding::plain), std::get<1>(candidate),
                            std::get<2>(candidate));
 }
 
@@ -124,7 +124,7 @@ std::vector<std::size_t> DecryptorXor::guessKeySize(const ByteData &cipheredData
 double DecryptorXor::measureConfidence(const ByteData &decipheredData) const
 {
     ByteDistribution curDistribution(decipheredData);
-    return curDistribution.distance(referenceLanguage);
+    return curDistribution.distance(referenceLanguage_);
 }
 
 std::tuple<std::string, ByteData, double> DecryptorXor::decipherMultiKeySize(const ByteData &cipheredData,
@@ -143,5 +143,5 @@ std::tuple<std::string, ByteData, double> DecryptorXor::decipherMultiKeySize(con
 
     auto decipheredStr = (cipheredData ^ key);
     auto confidence = measureConfidence(decipheredStr);
-    return std::make_tuple(decipheredStr.str(ByteData::encoding::plain), key, confidence);
+    return std::make_tuple(decipheredStr.str(ByteData::Encoding::plain), key, confidence);
 }

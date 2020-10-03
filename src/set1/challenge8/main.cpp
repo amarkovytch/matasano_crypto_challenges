@@ -10,27 +10,6 @@
  *
  * @return pair of identical ByteData if found
  */
-// static std::optional<std::pair<ByteData, ByteData>> hasIdenticalByteData2(std::vector<ByteData> bytesVector)
-// {
-//     for (std::size_t i = 0; i < bytesVector.size(); i++)
-//     {
-//         for (std::size_t j = i + 1; j < bytesVector.size(); j++)
-//         {
-//             if (bytesVector.at(i) == bytesVector.at(j))
-//             {
-//                 return std::make_pair(bytesVector.at(i), bytesVector.at(j));
-//             }
-//         }
-//     }
-
-//     return {};
-// }
-
-/**
- * @brief Iterates over the given vector of ByteData and finds a pair of identical ByteData (if any)
- *
- * @return pair of identical ByteData if found
- */
 static std::optional<ByteData> hasIdenticalByteData(const std::vector<ByteData> &bytesVector)
 {
     std::set<ByteData> bytesSet;

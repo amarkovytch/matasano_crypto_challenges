@@ -10,7 +10,7 @@ static const std::string EXP_OUTPUT = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgc
 int main()
 {
     ByteData data(INPUT);
-    VALIDATE_EQ(data.str(ByteData::encoding::base64), EXP_OUTPUT);
+    VALIDATE_EQ(data.str(ByteData::Encoding::base64), EXP_OUTPUT);
 
     std::cout << "Success !" << std::endl;
 

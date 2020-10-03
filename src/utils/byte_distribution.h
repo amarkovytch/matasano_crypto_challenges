@@ -30,7 +30,7 @@ public:
      */
     inline double at(std::byte byte) const
     {
-        return distributionMap.contains(byte) ? distributionMap.at(byte) : 0;
+        return distributionMap_.contains(byte) ? distributionMap_.at(byte) : 0;
     }
 
     /**
@@ -40,7 +40,7 @@ public:
      */
     inline void erase(std::byte byte)
     {
-        distributionMap.erase(byte);
+        distributionMap_.erase(byte);
     }
 
     /**
@@ -50,7 +50,7 @@ public:
      */
     inline std::size_t size() const
     {
-        return distributionMap.size();
+        return distributionMap_.size();
     }
 
     /**
@@ -66,7 +66,7 @@ private:
     /**
      * @brief the distribution map
      */
-    std::map<std::byte, double> distributionMap;
+    std::map<std::byte, double> distributionMap_;
 };
 
 #endif

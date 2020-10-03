@@ -3,61 +3,69 @@
 #include "matasano_asserts.h"
 #include <bitset>
 
-ByteData::ByteData(const std::string &str, encoding strEnc)
+ByteData::ByteData(const std::string &str, Encoding strEnc)
 {
-    THROW_IF(str.empty(), "can't construct from empty string", std::invalid_argument);
+    // THROW_IF(str.empty(), "can't construct from empty string", std::invalid_argument);
 
     switch (strEnc)
     {
-    case encoding::hex:
+    case Encoding::hex:
         parseHex(str);
         break;
-    case encoding::plain:
+    case Encoding::plain:
         parsePlain(str);
         break;
-    case encoding::base64:
+    case Encoding::base64:
         parseBase64(str);
         break;
     default:
-        throw std::invalid_argument("Bad encoding was given");
+        throw std::invalid_argument("Bad Encoding was given");
     }
 }
 
-ByteData::ByteData(std::byte b) { byteData.push_back(b); }
+ByteData::ByteData(std::byte b) { byteData_.push_back(b); }
 
 ByteData::ByteData(std::vector<std::byte> bytes)
 {
-    THROW_IF(bytes.empty(), "can't construct from empty string", std::invalid_argument);
-    byteData = bytes;
+    // THROW_IF(bytes.empty(), "can't construct from empty vector", std::invalid_argument);
+    byteData_ = bytes;
+}
+
+ByteData::ByteData(std::vector<unsigned char> bytes)
+{
+    for (auto b : bytes)
+    {
+        byteData_.push_back(std::byte{b});
+    }
 }
 
 ByteData operator+(ByteData lhs, const ByteData &rhs)
 {
-    ByteData res(lhs.byteData);
-    res.byteData.insert(res.byteData.end(), rhs.byteData.begin(), rhs.byteData.end());
+    ByteData res(lhs.byteData_);
+    res.byteData_.insert(res.byteData_.end(), rhs.byteData_.begin(), rhs.byteData_.end());
     return res;
 }
 
 ByteData &ByteData::operator+=(const ByteData &rhs)
 {
-    byteData.insert(byteData.end(), rhs.byteData.begin(), rhs.byteData.end());
+    byteData_.insert(byteData_.end(), rhs.byteData_.begin(), rhs.byteData_.end());
     return *this;
 }
 
 void ByteData::parsePlain(const std::string &plain)
 {
-    LOGIC_ASSERT(byteData.size() == 0);
+    LOGIC_ASSERT(byteData_.size() == 0);
 
     for (unsigned char ch : plain)
     {
         std::byte b{ch};
-        byteData.push_back(b);
+        byteData_.push_back(b);
     }
 }
 
 void ByteData::parseHex(const std::string &hex)
 {
-    LOGIC_ASSERT(byteData.size() == 0);
+    LOGIC_ASSERT(byteData_.size() == 0);
 
     parseHexInternal(hex);
 }
@@ -71,15 +79,20 @@ void ByteData::parseHexInternal(const std::string &hex)
         auto number = Convert::parseNumFromStr(hex.substr(i, 2), 16);
         LOGIC_ASSERT(number <= 255);
         std::byte b{static_cast<unsigned char>(number)};
-        byteData.push_back(b);
+        byteData_.push_back(b);
     }
 }
 
 void ByteData::parseBase64(const std::string &base64)
 {
-    LOGIC_ASSERT(byteData.size() == 0);
+    LOGIC_ASSERT(byteData_.size() == 0);
 
-    THROW_IF(base64.length() % 4 != 0, base64 + " has length that is not ultiply of 4", std::invalid_argument);
+    if (base64.length() == 0)
+    {
+        return;
+    }
+
+    THROW_IF(base64.length() % 4 != 0, base64 + " has length that is not multiply of 4", std::invalid_argument);
 
     auto eqPos = base64.find('=');
     THROW_IF(eqPos < base64.size() - 2, base64 + " is not in correct base64 format", std::invalid_argument);
@@ -103,7 +116,7 @@ void ByteData::parseBase64(const std::string &base64)
     }
     for (std::size_t i = 0; i < numPad; i++)
     {
-        byteData.pop_back();
+        byteData_.pop_back();
     }
 }
 
@@ -114,7 +127,7 @@ ByteData operator^(ByteData lhs, const ByteData &rhs)
 
     ByteData res(std::vector<std::byte>(lhs.size()));
 
-    ByteData::xorVectors(lhs.byteData, rhs.byteData, res.byteData);
+    ByteData::xorVectors(lhs.byteData_, rhs.byteData_, res.byteData_);
 
     return res;
 }
@@ -124,7 +137,7 @@ ByteData &ByteData::operator^=(const ByteData &rhs)
     THROW_IF(size() == 0, "this is empty", std::invalid_argument);
     THROW_IF(rhs.size() == 0, "rhs is empty", std::invalid_argument);
 
-    xorVectors(byteData, rhs.byteData, byteData);
+    xorVectors(byteData_, rhs.byteData_, byteData_);
 
     return *this;
 }
@@ -186,25 +199,25 @@ void ByteData::xorVectors(const std::vector<std::byte> &lhs, const std::vector<s
     }
 }
 
-std::string ByteData::str(encoding strEnc) const
+std::string ByteData::str(Encoding strEnc) const
 {
     switch (strEnc)
     {
-    case encoding::hex:
+    case Encoding::hex:
         return strHex();
         break;
-    case encoding::plain:
+    case Encoding::plain:
         return strPlain();
         break;
-    case encoding::base64:
+    case Encoding::base64:
         return strBase64();
         break;
     default:
-        throw std::invalid_argument("Bad encoding was given");
+        throw std::invalid_argument("Bad Encoding was given");
     }
 }
 
-std::string ByteData::strPlain() const { return strPlainInternal(byteData); }
+std::string ByteData::strPlain() const { return strPlainInternal(byteData_); }
 
 std::string ByteData::strPlainInternal(const std::vector<std::byte> &data)
 {
@@ -218,7 +231,7 @@ std::string ByteData::strPlainInternal(const std::vector<std::byte> &data)
     return res;
 }
 
-std::string ByteData::strHex() const { return strHexInternal(0, byteData.size()); }
+std::string ByteData::strHex() const { return strHexInternal(0, byteData_.size()); }
 
 std::string ByteData::strHexInternal(std::size_t start, std::size_t end) const
 {
@@ -226,7 +239,7 @@ std::string ByteData::strHexInternal(std::size_t start, std::size_t end) const
 
     for (auto i = start; i < end; i++)
     {
-        res += Convert::numToStr(std::to_integer<unsigned char>(byteData.at(i)), 2, 16);
+        res += Convert::numToStr(std::to_integer<unsigned char>(byteData_.at(i)), 2, 16);
     }
 
     return res;
@@ -236,13 +249,13 @@ std::string ByteData::strBase64() const
 {
     std::string result;
 
-    auto numBytes = byteData.size();
+    auto numBytes = byteData_.size();
     unsigned char bytesToPad = (3 - numBytes % 3) % 3;
 
     // convert every 3 bytes to 4 octal numbers and from that to one base64 symbol
     // iterate all the triples except the reminder
     std::size_t i = 0;
-    for (; i < byteData.size() - byteData.size() % 3; i += 3)
+    for (; i < byteData_.size() - byteData_.size() % 3; i += 3)
     {
         result += Convert::hex3ToBase64_4(strHexInternal(i, i + 3));
     }
@@ -250,7 +263,7 @@ std::string ByteData::strBase64() const
     if (bytesToPad != 0)
     {
         // convert the remaining 3 bytes with additional pad
-        std::string paddedHexReminder = Convert::padWith(strHexInternal(i, byteData.size()), "00", bytesToPad);
+        std::string paddedHexReminder = Convert::padWith(strHexInternal(i, byteData_.size()), "00", bytesToPad);
 
         result += Convert::hex3ToBase64_4(paddedHexReminder);
 
@@ -265,8 +278,8 @@ std::string ByteData::strBase64() const
 
 double ByteData::hamming(const ByteData &another)
 {
-    THROW_IF(byteData.size() != another.size(),
-             "this object has length of " + std::to_string(byteData.size()) + " which is not equal to " +
+    THROW_IF(byteData_.size() != another.size(),
+             "this object has length of " + std::to_string(byteData_.size()) + " which is not equal to " +
                  std::to_string(another.size()),
              std::invalid_argument);
 
@@ -299,7 +312,7 @@ std::vector<ByteData> ByteData::extractRows(std::size_t elmsInRow, std::size_t m
     std::size_t currRow = 0;
     std::size_t indexInRow = 0;
 
-    for (std::size_t i = 0; i < byteData.size(); i++, indexInRow++)
+    for (std::size_t i = 0; i < byteData_.size(); i++, indexInRow++)
     {
         if (indexInRow == elmsInRow)
         {
@@ -314,7 +327,7 @@ std::vector<ByteData> ByteData::extractRows(std::size_t elmsInRow, std::size_t m
             break;
         }
 
-        currBD += byteData.at(i);
+        currBD += byteData_.at(i);
     }
 
     if (currBD.size() != 0)
@@ -333,7 +346,7 @@ std::vector<ByteData> ByteData::extractColumns(std::size_t maxNumColumns, std::s
     std::vector<ByteData> result;
     std::size_t currColumn = 0;
 
-    for (std::size_t i = 0; i < byteData.size(); i++, currColumn++)
+    for (std::size_t i = 0; i < byteData_.size(); i++, currColumn++)
     {
         if (currColumn == maxNumColumns)
         {
@@ -355,8 +368,31 @@ std::vector<ByteData> ByteData::extractColumns(std::size_t maxNumColumns, std::s
             }
         }
 
-        result.at(currColumn) += byteData.at(i);
+        result.at(currColumn) += byteData_.at(i);
     }
 
     return result;
+}
+
+std::vector<unsigned char> ByteData::dataChar() const
+{
+    std::vector<unsigned char> result;
+    for (auto byte : byteData_)
+    {
+        result.push_back(std::to_integer<unsigned char>(byte));
+    }
+
+    return result;
+}
+
+ByteData ByteData::subData(std::size_t start, std::size_t count) const
+{
+    THROW_IF((start + count) > size(),
+             std::to_string(start) + " + " + std::to_string(count) +
+                 " fall beyond the size of data:" + std::to_string(size()),
+             std::invalid_argument);
+
+    THROW_IF(0 == count, "count can't be 0", std::invalid_argument);
+
+    return ByteData(std::vector(byteData_.begin() + start, byteData_.begin() + start + count));
 }

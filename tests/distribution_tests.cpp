@@ -4,7 +4,7 @@
 
 TEST(ByteDistributionTest, DistributionTest)
 {
-    ByteData bytes("aabc", ByteData::encoding::plain);
+    ByteData bytes("aabc", ByteData::Encoding::plain);
     ByteDistribution distribution(bytes);
 
     ASSERT_EQ(3, distribution.size());
@@ -17,7 +17,7 @@ TEST(ByteDistributionTest, DistributionTest)
 
 TEST(ByteDistributionTest, DistributionTestRemove)
 {
-    ByteData bytes("aabc", ByteData::encoding::plain);
+    ByteData bytes("aabc", ByteData::Encoding::plain);
     ByteDistribution distribution(bytes);
 
     ASSERT_EQ(3, distribution.size());
@@ -35,7 +35,7 @@ TEST(ByteDistributionTest, DistributionTestRemove)
 
 TEST(ByteDistributionTest, DistributionTestFraction)
 {
-    ByteData bytes("caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", ByteData::encoding::plain);
+    ByteData bytes("caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", ByteData::Encoding::plain);
     ByteDistribution distribution(bytes);
 
     ASSERT_EQ(2.5, distribution.at(std::byte{'c'}));
@@ -43,10 +43,10 @@ TEST(ByteDistributionTest, DistributionTestFraction)
 
 TEST(ByteDistributionTest, DistanceSame)
 {
-    ByteData bytes("aabc", ByteData::encoding::plain);
+    ByteData bytes("aabc", ByteData::Encoding::plain);
     ByteDistribution distribution(bytes);
 
-    ByteData bytes2("aabc", ByteData::encoding::plain);
+    ByteData bytes2("aabc", ByteData::Encoding::plain);
     ByteDistribution distribution2(bytes);
 
     ASSERT_EQ(0, distribution.distance(distribution2));
@@ -55,10 +55,10 @@ TEST(ByteDistributionTest, DistanceSame)
 
 TEST(ByteDistributionTest, DistanceDifferentSlightly)
 {
-    ByteData bytes("aabc", ByteData::encoding::plain);
+    ByteData bytes("aabc", ByteData::Encoding::plain);
     ByteDistribution distribution(bytes);
 
-    ByteData bytes2("aaec", ByteData::encoding::plain);
+    ByteData bytes2("aaec", ByteData::Encoding::plain);
     ByteDistribution distribution2(bytes2);
 
     ASSERT_EQ(50.0, distribution.distance(distribution2));
@@ -66,10 +66,10 @@ TEST(ByteDistributionTest, DistanceDifferentSlightly)
 
 TEST(ByteDistributionTest, DistanceDifferentCompletely)
 {
-    ByteData bytes("bc", ByteData::encoding::plain);
+    ByteData bytes("bc", ByteData::Encoding::plain);
     ByteDistribution distribution(bytes);
 
-    ByteData bytes2("aefg", ByteData::encoding::plain);
+    ByteData bytes2("aefg", ByteData::Encoding::plain);
     ByteDistribution distribution2(bytes2);
 
     ASSERT_EQ(200.0, distribution.distance(distribution2));

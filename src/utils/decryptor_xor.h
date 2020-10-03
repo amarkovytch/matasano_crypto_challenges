@@ -57,7 +57,7 @@ private:
     /**
      * reference language distribution. Used to 'guess' whether we deciphered the given byte data vector correctly
      */
-    ByteDistribution referenceLanguage;
+    ByteDistribution referenceLanguage_;
 
     /**
      * @brief Tries to guess the key size with which the given ByteData was ciphered.The idea is to try various key

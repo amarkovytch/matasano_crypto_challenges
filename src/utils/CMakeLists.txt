@@ -1,6 +1,6 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
-find_package(BOTAN REQUIRED)
-include_directories(${BOTAN_INCLUDE_DIRS})
+find_package(CRYPTOPP REQUIRED)
+include_directories(${CTRYPTOPP_INCLUDE_DIRS})
 
 file(GLOB_RECURSE source_list "*.cpp" "*.hpp")
 

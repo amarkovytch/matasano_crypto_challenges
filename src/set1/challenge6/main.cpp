@@ -13,12 +13,12 @@ int main()
     auto referenceEnglish = FileUtils::read("assets/lotr.txt");
     DecryptorXor decryptor(referenceEnglish);
 
-    ByteData cipheredBase64(cipheredBase64Str, ByteData::encoding::base64);
+    ByteData cipheredBase64(cipheredBase64Str, ByteData::Encoding::base64);
 
     auto [decipher, key, ignore] = decryptor.decipherMulti(cipheredBase64, std::pair(2, 40));
 
     std::cout << "The deciphered result is: " << std::endl << decipher << std::endl;
-    std::cout << "The key is: " << key.str(ByteData::encoding::plain) << std::endl;
+    std::cout << "The key is: " << key.str(ByteData::Encoding::plain) << std::endl;
 
     return 0;
 }

@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "general_utils.h"
+
 /**
  * @brief Class for holding byte data with a set of usefull operations
  */
@@ -14,13 +16,13 @@ class ByteData
 {
 public:
     /**
-     * Enum type for string encoding that is received as input in various function or returned as output
+     * Enum type for string Encoding that is received as input in various function or returned as output
      */
-    enum class encoding
+    enum class Encoding
     {
-        hex,    // hex encoding
-        base64, // base64 encoding
-        plain   // no encoding
+        hex,    // hex Encoding
+        base64, // base64 Encoding
+        plain   // no Encoding
     };
 
     /**
@@ -29,14 +31,14 @@ public:
     ByteData() = default;
 
     /**
-     * @brief Construct a new ByteData object from a string representation in a given encoding
+     * @brief Construct a new ByteData object from a string representation in a given Encoding
      *
      * @param str data to construct the object from
-     * @param strEnc data encoding
+     * @param strEnc data Encoding
      *
-     * @throw std::invalid_argument if str is empty or does not correspond to given encoding, or bad encoding is given
+     * @throw std::invalid_argument if str does not correspond to given Encoding, or bad Encoding is given
      */
-    ByteData(const std::string &str, encoding strEnc = encoding::hex);
+    ByteData(const std::string &str, Encoding strEnc = Encoding::hex);
 
     /**
      * @brief Construct a new ByteData object from a single byte
@@ -49,9 +51,15 @@ public:
      * @brief Construct a new ByteData object from a vector of bytes
      *
      * @param bytes bytes to construct object from
-     * @throw std::invalid_argument if bytes is empty
      */
     ByteData(std::vector<std::byte> bytes);
+
+    /**
+     * @brief Construct a new ByteData object from a vector of unsigned char
+     *
+     * @param bytes bytes to construct object from
+     */
+    ByteData(std::vector<unsigned char> bytes);
 
     /**
      * @brief concatenates the data of two objects
@@ -96,12 +104,12 @@ public:
     ByteData &operator^=(const ByteData &rhs);
 
     /**
-     * @brief retrieve string representation of this object in given encoding
+     * @brief retrieve string representation of this object in given Encoding
      *
-     * @param strEnc encoding
+     * @param strEnc Encoding
      * @return string representation
      */
-    std::string str(encoding strEnc = encoding::hex) const;
+    std::string str(Encoding strEnc = Encoding::hex) const;
 
     /**
      * @brief auto generated three-way-comparison operator
@@ -124,18 +132,27 @@ public:
     bool eqCyclically(const ByteData &other) const;
 
     /**
+     * @brief Return const reference to the undelying data vector
+     *
+     * @return const reference to the data vector
+     */
+    inline std::vector<std::byte> const &data() const { return byteData_; }
+
+    /**
      * @brief Return reference to the undelying data vector
      *
      * @return reference to the data vector
      */
-    inline std::vector<std::byte> const &data() const { return byteData; }
+    inline std::vector<std::byte> &data() { return byteData_; }
+
+    std::vector<unsigned char> dataChar() const;
 
     /**
      * @brief Return size of underlying ByteData vector
      *
      * @return size of ByteData
      */
-    inline std::size_t size() const { return byteData.size(); }
+    inline std::size_t size() const { return byteData_.size(); }
 
     /**
      * @brief Find hamming distance with another ByteData
@@ -146,6 +163,17 @@ public:
      * @throw std::invalid_argument if length of another is not equal to length of the current byte data
      */
     double hamming(const ByteData &another);
+
+    /**
+     * @brief Extracts sub ByteData from a given one
+     *
+     * @param start the index of element to start
+     * @param count the number of elements to extract
+     * @return sub ByteData
+     *
+     * @throw std::invalid_argument if start / count do not fall within the range of data in ByteData or if count is 0
+     */
+    ByteData subData(std::size_t start, std::size_t count) const;
 
     /**
      * @brief Extract consequetive elements from byte data. Each 'elmsInRow' elements form one row. Stop after
@@ -181,7 +209,9 @@ private:
     /**
      * underlying object byte data
      */
-    std::vector<std::byte> byteData;
+    // TODO this has to be implemented with secure allocator to securely wipe data
+    // also in all the places where vector is returned (and maybe in other classes as well)
+    std::vector<std::byte> byteData_;
 
     /**
      * @brief parses string data as hex. Should be called from constructor
@@ -216,21 +246,21 @@ private:
     void parseBase64(const std::string &base64);
 
     /**
-     * @brief return string representation without any encoding
+     * @brief return string representation without any Encoding
      *
      * @return string
      */
     std::string strPlain() const;
 
     /**
-     * @brief return string representation in hex encoding
+     * @brief return string representation in hex Encoding
      *
      * @return string
      */
     std::string strHex() const;
 
     /**
-     * @brief return string representation in base64 encoding
+     * @brief return string representation in base64 Encoding
      *
      * @return string
      */
@@ -249,7 +279,7 @@ private:
                            std::vector<std::byte> &result);
 
     /**
-     * @brief return string representation without any encoding
+     * @brief return string representation without any Encoding
      * Internal function that does not need this
      *
      * @param data data vector
@@ -259,7 +289,7 @@ private:
     static std::string strPlainInternal(const std::vector<std::byte> &data);
 
     /**
-     * @brief return string representation in hex encoding of the data in range
+     * @brief return string representation in hex Encoding of the data in range
      * [start, end)
      *
      * @param start starting index
