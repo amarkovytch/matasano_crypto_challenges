@@ -2,6 +2,7 @@
 #define MATASANO_BLOCK_AGGREGATOR_H
 
 #include "byte_data.h"
+#include "generator.h"
 
 /**
  * @brief The purpose of the class is to :
@@ -37,13 +38,6 @@ public:
     CryptoBlockAggregator(const ByteData &source, Padding padding, std::size_t blockSize = 16);
 
     /**
-     * @brief Return true if there are still blocks to extract
-     *
-     * @return true if there are still blocks to return
-     */
-    inline bool hasBlocksInSource() const { return currentIndex_ < source_.size(); };
-
-    /**
      * @brief Return the next block from source. If the block is the last one and Padding was PadOnGetBlock - pad it
      * This function should always be called after aggregateOutput, except the first time
      *
@@ -51,8 +45,36 @@ public:
      * @throw std::runtime_error if it was not called after aggregateOutput (except the first time), also after the last
      * block was returned
      */
-    // TODO consider replacing with coroutines
-    ByteData getBlockFromSource();
+
+    class Iterator
+    {
+    public:
+        void operator++();
+        const ByteData &operator*() const { return *iterator_; }
+        bool operator==(const Iterator &other) const { return other.iterator_ == iterator_; }
+
+        explicit Iterator(const std::vector<ByteData>::iterator &iterator, CryptoBlockAggregator &parent)
+            : iterator_{iterator}, parent_(parent)
+        {
+        }
+
+        Iterator begin() { return Iterator{parent_.source_.begin(), parent_}; }
+        Iterator end() { return Iterator{parent_.source_.end(), parent_}; }
+
+    private:
+        std::vector<ByteData>::iterator iterator_;
+        CryptoBlockAggregator &parent_;
+    };
+
+    friend class Iterator;
+
+    /**
+     * @brief Iterator to return the next block from source. Pad the last block if Padding was PadOnGetBlock
+     * 'aggregateOutput' should be called during each iteration
+     *
+     * @return Generator<ByteData>
+     */
+    CryptoBlockAggregator::Iterator blocksFromSource();
 
     /**
      * @brief Aggregates block to one single output ByteData. If this block is the last one (there are no more blocks in
@@ -89,26 +111,19 @@ private:
     std::size_t blockSize_;
 
     /**
-     * @brief if true - last actin was getBlockFromSource. Inizialized to false to enable the first getBlockFromSource
+     * @brief if true - last action was getBlockFromSource. Inizialized to false to enable the first getBlockFromSource
      */
     bool lastActionGet_ = false;
 
     /**
-     * @brief current index to extract from source
+     * @brief if true - we have reached the last element in source_
      */
-    std::size_t currentIndex_ = 0;
+    bool lastElementInSourceReached_ = false;
 
     /**
      * @brief The gathered output
      */
     ByteData output_;
-
-    /**
-     * @brief return true if currentIndex points to the last index
-     *
-     * @return true if yes, false otherwise
-     */
-    inline bool isLastIndex() const { return currentIndex_ == (source_.size() - 1); };
 };
 
 #endif

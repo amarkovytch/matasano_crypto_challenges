@@ -56,22 +56,6 @@ ByteData Aes::encryptDecrypt(const ByteData &data, bool encrypt) const
     return ByteData();
 }
 
-ByteData Aes::encryptDecryptEcb(const ByteData &data, bool encrypt) const
-{
-    LOGIC_ASSERT(data.size() != 0);
-
-    CryptoBlockAggregator aggregator(data, encrypt ? CryptoBlockAggregator::Padding::PadOnGetBlock
-                                                   : CryptoBlockAggregator::Padding::UnpadOnAggregateBlock);
-
-    while (aggregator.hasBlocksInSource())
-    {
-        auto block = aggregator.getBlockFromSource();
-        aggregator.aggregateBlock(ecbEncryptDecryptBlock(block, encrypt));
-    }
-
-    return aggregator.output();
-}
-
 ByteData Aes::ecbEncryptDecryptBlock(const ByteData &block, bool encrypt) const
 {
     LOGIC_ASSERT(block.size() % BLOCK_SIZE_BYTES == 0);
@@ -92,6 +76,21 @@ ByteData Aes::ecbEncryptDecryptBlock(const ByteData &block, bool encrypt) const
     return result;
 }
 
+ByteData Aes::encryptDecryptEcb(const ByteData &data, bool encrypt) const
+{
+    LOGIC_ASSERT(data.size() != 0);
+
+    CryptoBlockAggregator aggregator(data, encrypt ? CryptoBlockAggregator::Padding::PadOnGetBlock
+                                                   : CryptoBlockAggregator::Padding::UnpadOnAggregateBlock);
+
+    for (auto const &block : aggregator.blocksFromSource())
+    {
+        aggregator.aggregateBlock(ecbEncryptDecryptBlock(block, encrypt));
+    }
+
+    return aggregator.output();
+}
+
 ByteData Aes::encryptDecryptCbc(const ByteData &data, bool encrypt) const
 {
     LOGIC_ASSERT(data.size() != 0);
@@ -101,9 +100,8 @@ ByteData Aes::encryptDecryptCbc(const ByteData &data, bool encrypt) const
 
     auto prevCipheredBlock = iv_;
 
-    while (aggregator.hasBlocksInSource())
+    for (auto const &block : aggregator.blocksFromSource())
     {
-        auto block = aggregator.getBlockFromSource();
         if (encrypt)
         {
             prevCipheredBlock = ecbEncryptDecryptBlock(prevCipheredBlock ^ block, encrypt);

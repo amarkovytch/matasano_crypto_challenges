@@ -13,7 +13,7 @@ TEST(CryptoBlockAggregator, TestInvalidCreate)
 TEST(CryptoBlockAggregator, TestInvalidAggregateSize)
 {
     CryptoBlockAggregator aggregator(ByteData("1234567890"), CryptoBlockAggregator::Padding::PadOnGetBlock, 7);
-    aggregator.getBlockFromSource();
+    aggregator.blocksFromSource().begin();
 
     ASSERT_THROW(aggregator.aggregateBlock(ByteData("1")), std::invalid_argument);
 }
@@ -26,31 +26,29 @@ TEST(CryptoBlockAggregator, TestInvalidUsage)
     // can't call aggregateOutput as first operation
     ASSERT_THROW(aggregator.aggregateBlock(block), std::runtime_error);
 
-    aggregator.getBlockFromSource();
-    // can't call getBlockFromSource twice
-    ASSERT_THROW(aggregator.getBlockFromSource(), std::runtime_error);
+    auto iter = aggregator.blocksFromSource().begin();
+
+    // can't call iterator twice
+    ASSERT_THROW(++iter, std::runtime_error);
 
     aggregator.aggregateBlock(block);
     // can't call aggregateOutput twice
     ASSERT_THROW(aggregator.aggregateBlock(block), std::runtime_error);
 }
 
-TEST(CryptoBlockAggregator, TestInvalidUsage2)
+TEST(CryptoBlockAggregator, TestEmptyIteratorAfterEndReached)
 {
     CryptoBlockAggregator aggregator(ByteData("1234567890", ByteData::Encoding::plain),
                                      CryptoBlockAggregator::Padding::PadOnGetBlock, 7);
 
     ByteData block("1234567", ByteData::Encoding::plain);
 
-    aggregator.getBlockFromSource();
-    aggregator.aggregateBlock(block);
+    for (const auto &block : aggregator.blocksFromSource())
+    {
+        aggregator.aggregateBlock(block);
+    }
 
-    aggregator.getBlockFromSource();
-    ASSERT_FALSE(aggregator.hasBlocksInSource());
-
-    aggregator.aggregateBlock(block);
-    // can't extract any more data
-    ASSERT_THROW(aggregator.getBlockFromSource(), std::runtime_error);
+    ASSERT_THROW(aggregator.blocksFromSource(), std::runtime_error);
 }
 
 TEST(CryptoBlockAggregator, TestPadOnGetBlock)
@@ -60,9 +58,8 @@ TEST(CryptoBlockAggregator, TestPadOnGetBlock)
 
     CryptoBlockAggregator aggregator(source, CryptoBlockAggregator::Padding::PadOnGetBlock, 7);
 
-    while (aggregator.hasBlocksInSource())
+    for (const auto &block : aggregator.blocksFromSource())
     {
-        auto block = aggregator.getBlockFromSource();
         ASSERT_EQ(7, block.size());
 
         aggregator.aggregateBlock(block);
@@ -86,9 +83,8 @@ TEST(CryptoBlockAggregator, TestUnpadOnAggregateBlock)
 
     CryptoBlockAggregator aggregator(source + padding, CryptoBlockAggregator::Padding::UnpadOnAggregateBlock, 7);
 
-    while (aggregator.hasBlocksInSource())
+    for (const auto &block : aggregator.blocksFromSource())
     {
-        auto block = aggregator.getBlockFromSource();
         ASSERT_EQ(7, block.size());
 
         aggregator.aggregateBlock(block);

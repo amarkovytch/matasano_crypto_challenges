@@ -1,3 +1,5 @@
+#include <coroutine>
+
 #include "crypto_block_aggregator.h"
 #include "matasano_asserts.h"
 #include "padder.h"
@@ -11,24 +13,18 @@ CryptoBlockAggregator::CryptoBlockAggregator(const ByteData &source, Padding pad
              "when Padding is UnpadOnAggregateBlock, source data should be whole blocks", std::invalid_argument);
 }
 
-ByteData CryptoBlockAggregator::getBlockFromSource()
+CryptoBlockAggregator::Iterator CryptoBlockAggregator::blocksFromSource()
 {
-    THROW_IF(!hasBlocksInSource(), "there are no more blocks to extract", std::runtime_error);
-    THROW_IF(lastActionGet_, "can't peform getBlockFromSource twice", std::runtime_error);
+    THROW_IF(lastElementInSourceReached_, "there are no more blocks to extract", std::runtime_error);
 
-    auto result = source_.at(currentIndex_);
-    if (isLastIndex())
+    if (padding_ == Padding::PadOnGetBlock)
     {
-        if (padding_ == Padding::PadOnGetBlock)
-        {
-            result = Padder::padToBlockSize(result, blockSize_);
-        }
+        source_.back() = Padder::padToBlockSize(source_.back(), blockSize_);
     }
 
-    currentIndex_++;
     lastActionGet_ = true;
 
-    return result;
+    return CryptoBlockAggregator::Iterator(source_.begin(), *this);
 }
 
 void CryptoBlockAggregator::aggregateBlock(const ByteData &block)
@@ -42,7 +38,7 @@ void CryptoBlockAggregator::aggregateBlock(const ByteData &block)
     auto result = block;
 
     // the last operation
-    if (!hasBlocksInSource())
+    if (lastElementInSourceReached_)
     {
         if (padding_ == Padding::UnpadOnAggregateBlock)
         {
@@ -53,4 +49,17 @@ void CryptoBlockAggregator::aggregateBlock(const ByteData &block)
     lastActionGet_ = false;
 
     output_ += result;
+}
+
+void CryptoBlockAggregator::Iterator::operator++()
+{
+    THROW_IF(parent_.lastActionGet_, "you didn't call aggregateBlock in last iteration !", std::runtime_error);
+    iterator_++;
+
+    if (iterator_ == parent_.source_.begin() + parent_.source_.size() - 1)
+    {
+        parent_.lastElementInSourceReached_ = true;
+    }
+
+    parent_.lastActionGet_ = true;
 }
