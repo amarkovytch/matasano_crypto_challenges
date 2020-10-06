@@ -1,6 +1,3 @@
-find_package(CRYPTOPP REQUIRED)
-include_directories(${CTRYPTOPP_INCLUDE_DIRS})
-
 # Add executable called "set1_challenge1" that is built from the source files
 # "main.cpp". The extensions are automatically found.
 add_executable (set1_challenge7 main.cpp)

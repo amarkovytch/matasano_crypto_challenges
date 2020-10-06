@@ -1,6 +1,7 @@
 #ifndef MATASANO_BYTE_DATA_H
 #define MATASANO_BYTE_DATA_H
 
+#include <botan/secmem.h>
 #include <compare>
 #include <cstddef>
 #include <map>
@@ -211,6 +212,7 @@ private:
      */
     // TODO this has to be implemented with secure allocator to securely wipe data
     // also in all the places where vector is returned (and maybe in other classes as well)
+    // Botan::secure_vector<std::byte> byteData_;
     std::vector<std::byte> byteData_;
 
     /**

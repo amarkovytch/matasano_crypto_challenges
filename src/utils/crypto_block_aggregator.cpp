@@ -1,5 +1,3 @@
-#include <coroutine>
-
 #include "crypto_block_aggregator.h"
 #include "matasano_asserts.h"
 #include "padder.h"
