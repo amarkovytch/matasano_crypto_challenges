@@ -10,28 +10,28 @@ TEST(PadderTests, PadderZero)
 TEST(PadderTests, PadderTest)
 {
     ByteData b("123456");
-    ByteData padded = b + std::vector(4, std::byte{4});
+    ByteData padded = b + std::vector(4, std::uint8_t{4});
     ASSERT_EQ(padded, Padder::pad(b, 4));
 }
 
 TEST(PadderTests, PadderBlock)
 {
     ByteData b("123456");
-    ByteData padded = b + std::vector(5, std::byte{5});
+    ByteData padded = b + std::vector(5, std::uint8_t{5});
     ASSERT_EQ(padded, Padder::padToBlockSize(b, 8));
 }
 
 TEST(PadderTests, PadderBlockFullSize)
 {
     ByteData b("1122334455667788");
-    ByteData padded = b + std::vector(8, std::byte{8});
+    ByteData padded = b + std::vector(8, std::uint8_t{8});
     ASSERT_EQ(padded, Padder::padToBlockSize(b, 8));
 }
 
 TEST(PadderTests, PadderBlockZeroSize)
 {
     ByteData b;
-    ByteData padded = b + std::vector(8, std::byte{8});
+    ByteData padded = b + std::vector(8, std::uint8_t{8});
     ASSERT_EQ(padded, Padder::padToBlockSize(b, 8));
 }
 
@@ -52,11 +52,11 @@ TEST(PadderTests, RemovePadding)
 TEST(PadderTests, RemovePaddingWrongNumber)
 {
     ByteData b("123456");
-    ASSERT_THROW(Padder::removePadding(b + std::byte{255}), std::invalid_argument);
+    ASSERT_THROW(Padder::removePadding(b + std::uint8_t{255}), std::invalid_argument);
 }
 
 TEST(PadderTests, RemovePaddingWrongPadding)
 {
     ByteData b("123456", ByteData::Encoding::plain);
-    ASSERT_THROW(Padder::removePadding(b + std::byte{3} + std::byte{3}), std::invalid_argument);
+    ASSERT_THROW(Padder::removePadding(b + std::uint8_t{3} + std::uint8_t{3}), std::invalid_argument);
 }

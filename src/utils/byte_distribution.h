@@ -4,14 +4,14 @@
 #include "byte_data.h"
 
 /**
-* @brief Represents percentage distribution of each byte in a given ByteData
-* Each byte can be queried for the percentage of number of time it appears in data as value.
-* Bytes that do not appear in data, will have 0 percent.
-* For example:
-*
-* If object has these bytes  : {10, 10, 99, 98}
-* The resulting map shall be : {{10, 50}, {99, 25}, {98, 25}}
-*/
+ * @brief Represents percentage distribution of each byte in a given ByteData
+ * Each byte can be queried for the percentage of number of time it appears in data as value.
+ * Bytes that do not appear in data, will have 0 percent.
+ * For example:
+ *
+ * If object has these bytes  : {10, 10, 99, 98}
+ * The resulting map shall be : {{10, 50}, {99, 25}, {98, 25}}
+ */
 class ByteDistribution
 {
 public:
@@ -28,7 +28,7 @@ public:
      * @param byte to check distribution for
      * @return distribution in percentage
      */
-    inline double at(std::byte byte) const
+    inline double at(std::uint8_t byte) const
     {
         return distributionMap_.contains(byte) ? distributionMap_.at(byte) : 0;
     }
@@ -38,20 +38,14 @@ public:
      *
      * @param byte byte to remove
      */
-    inline void erase(std::byte byte)
-    {
-        distributionMap_.erase(byte);
-    }
+    inline void erase(std::uint8_t byte) { distributionMap_.erase(byte); }
 
     /**
      * @brief get the size of the distribution, i.e the number of members with non-zero percentage
      *
      * @return the size
      */
-    inline std::size_t size() const
-    {
-        return distributionMap_.size();
-    }
+    inline std::size_t size() const { return distributionMap_.size(); }
 
     /**
      * @brief returns non-negative double representing a 'distance' from another Distribution object
@@ -66,7 +60,7 @@ private:
     /**
      * @brief the distribution map
      */
-    std::map<std::byte, double> distributionMap_;
+    std::map<std::uint8_t, double> distributionMap_;
 };
 
 #endif

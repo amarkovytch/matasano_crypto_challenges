@@ -3,7 +3,7 @@
 
 ByteDistribution::ByteDistribution(const ByteData &byteData)
 {
-    auto bytes = byteData.data();
+    auto bytes = byteData.secureData();
     double one_elm_percentage = (1.0 / bytes.size()) * 100;
 
     for (auto b : bytes)

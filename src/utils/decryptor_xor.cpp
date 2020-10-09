@@ -10,19 +10,19 @@ DecryptorXor::DecryptorXor(const std::string &referenceLanguageData)
 {
 }
 
-std::tuple<std::string, std::byte, double> DecryptorXor::decipherSingle(const ByteData &cipheredData) const
+std::tuple<std::string, std::uint8_t, double> DecryptorXor::decipherSingle(const ByteData &cipheredData) const
 {
-    auto candidate = std::make_tuple(cipheredData, std::byte{0}, std::numeric_limits<double>::max());
-    unsigned char curKey = 0;
+    auto candidate = std::make_tuple(cipheredData, std::uint8_t{0}, std::numeric_limits<double>::max());
+    std::uint8_t curKey = 0;
     do
     {
-        auto curDecipher = cipheredData ^ std::byte{curKey};
+        auto curDecipher = cipheredData ^ curKey;
 
         auto curConfidence = measureConfidence(curDecipher);
 
         if (curConfidence < std::get<2>(candidate))
         {
-            candidate = std::make_tuple(curDecipher, std::byte{curKey}, curConfidence);
+            candidate = std::make_tuple(curDecipher, curKey, curConfidence);
             // a little optimization for the trivial case, if we have exact match, no point in iterating further
             if (0.0 == curConfidence)
             {

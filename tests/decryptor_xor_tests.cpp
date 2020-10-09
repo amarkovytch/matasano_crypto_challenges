@@ -27,13 +27,13 @@ TEST_F(DecryptorXorTest, TrivialCaseSingleXor)
 
     auto [retultStr, resultCipher, ignore] = trivial.decipherSingle(trivialBD);
     ASSERT_EQ(trivialStr, retultStr);
-    ASSERT_EQ(std::byte{0}, resultCipher);
+    ASSERT_EQ(std::uint8_t{0}, resultCipher);
 }
 
 TEST_F(DecryptorXorTest, AlmostTrivialCaseSingleXor)
 {
     std::string trivialStr = "Almost Trivial test";
-    std::byte cipher{33};
+    std::uint8_t cipher{33};
 
     ByteData triviallyCipheredBD = ByteData(trivialStr, ByteData::Encoding::plain) ^ cipher;
     DecryptorXor trivial(trivialStr);
@@ -49,7 +49,7 @@ TEST_F(DecryptorXorTest, DecryptEnglishTextSingleXor)
                               "My sister goes to school. I go to school as well. I love to learn English very much !"
                               "English lessons in Soviet school were very good ! I Learned very good English !";
 
-    std::byte cipher{89};
+    std::uint8_t cipher{89};
     ByteData cipherText = ByteData(englishText, ByteData::Encoding::plain) ^ cipher;
 
     auto [retultStr, resultCipher, ignore] = decryptor->decipherSingle(cipherText);
@@ -66,7 +66,7 @@ TEST_F(DecryptorXorTest, CheckConfidenceSingleXor)
     std::string gibrishText =
         "a sdjfk ajsdfgi kaljsfhaskl;jdfh lsdjkghlskdjfghslkfjdglaksjdf;lwiru5 tow48uy5nh bvskjdfhgasdfg";
 
-    std::byte cipher{89};
+    std::uint8_t cipher{89};
     ByteData cipherEnglishText = ByteData(englishText, ByteData::Encoding::plain) ^ cipher;
     ByteData cipherGibrish = ByteData(gibrishText, ByteData::Encoding::plain) ^ cipher;
 
@@ -81,8 +81,8 @@ TEST_F(DecryptorXorTest, CheckConfidenceSingleXor)
 
 TEST_F(DecryptorXorTest, WrongRangeMultiXor)
 {
-    ASSERT_THROW(decryptor->decipherMulti(std::byte{0}, std::pair(0, 10)), std::invalid_argument);
-    ASSERT_THROW(decryptor->decipherMulti(std::byte{0}, std::pair(5, 4)), std::invalid_argument);
+    ASSERT_THROW(decryptor->decipherMulti(std::uint8_t{0}, std::pair(0, 10)), std::invalid_argument);
+    ASSERT_THROW(decryptor->decipherMulti(std::uint8_t{0}, std::pair(5, 4)), std::invalid_argument);
 }
 
 TEST_F(DecryptorXorTest, AlmostTrivialCaseMultiXor)

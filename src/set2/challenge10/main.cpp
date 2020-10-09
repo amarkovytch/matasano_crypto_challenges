@@ -6,7 +6,7 @@
 #include <string>
 
 static const std::string KEY = "YELLOW SUBMARINE";
-static const std::vector<std::byte> IV(16, std::byte{0});
+static const std::vector<std::uint8_t> IV(16, 0);
 
 int main()
 {

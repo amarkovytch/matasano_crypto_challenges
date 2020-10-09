@@ -5,7 +5,7 @@ TEST(ByteDataTest, ConstructorEmptyHex) { ASSERT_EQ(ByteData(), ByteData("")); }
 TEST(ByteDataTest, ConstructorEmptyBase64) { ASSERT_EQ(ByteData(), ByteData("", ByteData::Encoding::base64)); }
 TEST(ByteDataTest, ConstructorEmptyPlain) { ASSERT_EQ(ByteData(), ByteData("", ByteData::Encoding::plain)); }
 
-TEST(ByteDataTest, ConstructorEmptyVector) { ASSERT_EQ(ByteData(), ByteData(std::vector<std::byte>())); }
+TEST(ByteDataTest, ConstructorEmptyVector) { ASSERT_EQ(ByteData(), ByteData(std::vector<std::uint8_t>())); }
 
 TEST(ByteDataTest, ConstructorWrongHex) { ASSERT_THROW(ByteData("a"), std::invalid_argument); }
 
@@ -14,12 +14,6 @@ TEST(ByteDataTest, ConstructorWrongHex2) { ASSERT_THROW(ByteData("at"), std::inv
 TEST(ByteDataTest, ConstructWrongBase64)
 {
     ASSERT_THROW(ByteData("at", ByteData::Encoding::base64), std::invalid_argument);
-}
-
-TEST(ByteDataTest, ConstructFromChar)
-{
-    std::vector<unsigned char> ref{0x11, 0x22, 0x33};
-    ASSERT_EQ(ref, ByteData(ref).dataChar());
 }
 
 TEST(ByteDataTest, ConstructWrongBase64_2)
@@ -93,34 +87,38 @@ TEST(ByteDataTest, TestBase64TwoPad)
 
 TEST(ByteDataTest, ConstructFromByte)
 {
-    std::byte b{0x41};
+    std::uint8_t b{0x41};
     ByteData bd(b);
     ASSERT_EQ("A", bd.str(ByteData::Encoding::plain));
 }
 
 TEST(ByteDataTest, ConstructFromVector)
 {
-    std::byte b{0x41};
+    std::uint8_t b{0x41};
 
-    std::vector<std::byte> vec;
+    std::vector<std::uint8_t> vec;
     vec.push_back(b);
     vec.push_back(b);
     vec.push_back(b);
 
     ByteData bd(vec);
+
+    ASSERT_EQ(vec.size(), bd.size());
+    ASSERT_EQ(0, memcmp(bd.secureData().data(), vec.data(), vec.size()));
 }
 
-TEST(ByteDataTest, DataTest)
+TEST(ByteDataTest, ConstructFromSecureVector)
 {
-    std::byte b{0x41};
+    std::uint8_t b{0x41};
 
-    std::vector<std::byte> vec;
+    Botan::secure_vector<std::uint8_t> vec;
     vec.push_back(b);
     vec.push_back(b);
     vec.push_back(b);
 
     ByteData bd(vec);
-    ASSERT_EQ(vec, bd.data());
+
+    ASSERT_EQ(vec, bd.secureData());
 }
 
 TEST(ByteDataTest, OperatorPlus)
@@ -206,7 +204,7 @@ TEST(ByteDataTest, OperatorXorCyclicOneChar)
 {
     ByteData b1("61006100");
 
-    std::byte b{0x61};
+    std::uint8_t b{0x61};
     ASSERT_EQ("00610061", (b1 ^ b).str());
 }
 
@@ -261,8 +259,8 @@ TEST(ByteDataTest, HammingTestWokka)
 // std::vector<ByteData> extractRows(std::size_t elmsInRow, std::size_t maxRows = 0);
 TEST(ByteDataTest, ExtractRowsElmsZero)
 {
-    std::vector vec{std::byte{1}, std::byte{2}, std::byte{3}, std::byte{4}, std::byte{5},
-                    std::byte{6}, std::byte{7}, std::byte{8}, std::byte{9}, std::byte{10}};
+    std::vector vec{std::uint8_t{1}, std::uint8_t{2}, std::uint8_t{3}, std::uint8_t{4}, std::uint8_t{5},
+                    std::uint8_t{6}, std::uint8_t{7}, std::uint8_t{8}, std::uint8_t{9}, std::uint8_t{10}};
 
     ByteData bd(vec);
     ASSERT_THROW(bd.extractRows(0), std::invalid_argument);
@@ -315,8 +313,8 @@ TEST(ByteDataTest, ExtractRowsLargeMaxRows)
 
 TEST(ByteDataTest, ExtractColumnsZero)
 {
-    std::vector vec{std::byte{1}, std::byte{2}, std::byte{3}, std::byte{4}, std::byte{5},
-                    std::byte{6}, std::byte{7}, std::byte{8}, std::byte{9}, std::byte{10}};
+    std::vector vec{std::uint8_t{1}, std::uint8_t{2}, std::uint8_t{3}, std::uint8_t{4}, std::uint8_t{5},
+                    std::uint8_t{6}, std::uint8_t{7}, std::uint8_t{8}, std::uint8_t{9}, std::uint8_t{10}};
 
     ByteData bd(vec);
     ASSERT_THROW(bd.extractColumns(0), std::invalid_argument);
@@ -413,12 +411,12 @@ TEST(ByteDataTest, EqCyclicallyEqual)
     ASSERT_TRUE(b1.eqCyclically(b1));
 }
 
-TEST(DISABLED_ByteDataTest, TestSecureWipe)
+TEST(ByteDataTest, TestSecureWipe)
 {
-    std::vector<std::byte> initialDataVector{std::byte{01}, std::byte{02}, std::byte{03}};
+    std::vector<std::uint8_t> initialDataVector{std::uint8_t{01}, std::uint8_t{02}, std::uint8_t{03}};
 
     ByteData *byteDataPtr = new ByteData(initialDataVector);
-    auto initialByteDataData = byteDataPtr->data().data();
+    auto initialByteDataData = byteDataPtr->secureData().data();
 
     // the data now should be equal to the initial one
     ASSERT_EQ(0, memcmp(initialDataVector.data(), initialByteDataData, initialDataVector.size()));
@@ -428,15 +426,6 @@ TEST(DISABLED_ByteDataTest, TestSecureWipe)
 
     // let's try to retrieve previous data, we should be able, all should be 0-es
     ASSERT_NE(0, memcmp(initialDataVector.data(), initialByteDataData, initialDataVector.size()));
-}
-
-TEST(ByteDataTest, TestdataChar)
-{
-    ByteData b1("11223344");
-    std::vector<unsigned char> ref{0x11, 0x22, 0x33, 0x44};
-
-    ASSERT_EQ(ref, b1.dataChar());
-    ASSERT_EQ(b1.size(), b1.dataChar().size());
 }
 
 TEST(ByteDataTest, TestSubData)

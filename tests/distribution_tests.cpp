@@ -9,10 +9,10 @@ TEST(ByteDistributionTest, DistributionTest)
 
     ASSERT_EQ(3, distribution.size());
 
-    ASSERT_EQ(50.0, distribution.at(std::byte{'a'}));
-    ASSERT_EQ(25.0, distribution.at(std::byte{'b'}));
-    ASSERT_EQ(25.0, distribution.at(std::byte{'c'}));
-    ASSERT_EQ(0, distribution.at(std::byte{'h'}));
+    ASSERT_EQ(50.0, distribution.at(std::uint8_t{'a'}));
+    ASSERT_EQ(25.0, distribution.at(std::uint8_t{'b'}));
+    ASSERT_EQ(25.0, distribution.at(std::uint8_t{'c'}));
+    ASSERT_EQ(0, distribution.at(std::uint8_t{'h'}));
 }
 
 TEST(ByteDistributionTest, DistributionTestRemove)
@@ -22,15 +22,15 @@ TEST(ByteDistributionTest, DistributionTestRemove)
 
     ASSERT_EQ(3, distribution.size());
 
-    distribution.erase(std::byte{'r'});
-    distribution.erase(std::byte{'a'});
+    distribution.erase(std::uint8_t{'r'});
+    distribution.erase(std::uint8_t{'a'});
 
     ASSERT_EQ(2, distribution.size());
 
-    ASSERT_EQ(0, distribution.at(std::byte{'a'}));
-    ASSERT_EQ(25.0, distribution.at(std::byte{'b'}));
-    ASSERT_EQ(25.0, distribution.at(std::byte{'c'}));
-    ASSERT_EQ(0, distribution.at(std::byte{'h'}));
+    ASSERT_EQ(0, distribution.at(std::uint8_t{'a'}));
+    ASSERT_EQ(25.0, distribution.at(std::uint8_t{'b'}));
+    ASSERT_EQ(25.0, distribution.at(std::uint8_t{'c'}));
+    ASSERT_EQ(0, distribution.at(std::uint8_t{'h'}));
 }
 
 TEST(ByteDistributionTest, DistributionTestFraction)
@@ -38,7 +38,7 @@ TEST(ByteDistributionTest, DistributionTestFraction)
     ByteData bytes("caaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", ByteData::Encoding::plain);
     ByteDistribution distribution(bytes);
 
-    ASSERT_EQ(2.5, distribution.at(std::byte{'c'}));
+    ASSERT_EQ(2.5, distribution.at(std::uint8_t{'c'}));
 }
 
 TEST(ByteDistributionTest, DistanceSame)

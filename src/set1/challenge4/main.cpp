@@ -14,7 +14,7 @@ int main()
     DecryptorXor decryptor(referenceEnglish);
 
     std::string resultString = cipheredStrings.at(0);
-    auto resultDecipher = std::make_tuple(std::string(), std::byte{0}, std::numeric_limits<double>::max());
+    auto resultDecipher = std::make_tuple(std::string(), std::uint8_t{0}, std::numeric_limits<double>::max());
 
     for (auto const &cipheredString : cipheredStrings)
     {
@@ -29,7 +29,7 @@ int main()
     auto [decipher, key, ignore] = resultDecipher;
     std::cout << "The ciphered string was: " << resultString << std::endl;
     std::cout << "The deciphered result is: " << decipher << std::endl;
-    std::cout << "The key is: " << std::to_integer<unsigned int>(key) << std::endl;
+    std::cout << "The key is: " << key << std::endl;
 
     return 0;
 }

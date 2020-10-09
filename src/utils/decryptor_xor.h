@@ -33,7 +33,7 @@ public:
      * @return deciphered text, one-byte xor key, measure of confidence
      * @throw std::invalid_argument if cipheredText is empty
      */
-    std::tuple<std::string, std::byte, double> decipherSingle(const ByteData &cipheredData) const;
+    std::tuple<std::string, std::uint8_t, double> decipherSingle(const ByteData &cipheredData) const;
 
     /**
      * @brief Try to decipher given text that was ciphered with multi byte key. Return the deciphered string, multi byte

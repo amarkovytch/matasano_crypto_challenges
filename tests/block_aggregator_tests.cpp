@@ -54,7 +54,7 @@ TEST(CryptoBlockAggregator, TestEmptyIteratorAfterEndReached)
 TEST(CryptoBlockAggregator, TestPadOnGetBlock)
 {
     ByteData source("1234567890", ByteData::Encoding::plain);
-    ByteData sourceLastBlockPadded = source + std::vector(4, std::byte{4});
+    ByteData sourceLastBlockPadded = source + std::vector(4, std::uint8_t{4});
 
     CryptoBlockAggregator aggregator(source, CryptoBlockAggregator::Padding::PadOnGetBlock, 7);
 
@@ -79,7 +79,7 @@ TEST(CryptoBlockAggregator, TestSourceNotWholeBlocks)
 TEST(CryptoBlockAggregator, TestUnpadOnAggregateBlock)
 {
     ByteData source("1234567890", ByteData::Encoding::plain);
-    auto padding = std::vector(4, std::byte{4});
+    auto padding = std::vector(4, std::uint8_t{4});
 
     CryptoBlockAggregator aggregator(source + padding, CryptoBlockAggregator::Padding::UnpadOnAggregateBlock, 7);
 

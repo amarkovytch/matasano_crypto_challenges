@@ -46,21 +46,28 @@ public:
      *
      * @param b byte to construct object from
      */
-    ByteData(std::byte b);
+    ByteData(std::uint8_t b);
 
     /**
      * @brief Construct a new ByteData object from a vector of bytes
      *
      * @param bytes bytes to construct object from
      */
-    ByteData(std::vector<std::byte> bytes);
+    ByteData(const std::vector<std::uint8_t> &bytes);
 
     /**
-     * @brief Construct a new ByteData object from a vector of unsigned char
+     * @brief Construct a new ByteData object from a vector of secure bytes
      *
      * @param bytes bytes to construct object from
      */
-    ByteData(std::vector<unsigned char> bytes);
+    ByteData(const Botan::secure_vector<std::uint8_t> &bytes);
+
+    /**
+     * @brief Make sure underlying data vector is at least count length
+     *
+     * @param count
+     */
+    void reserve(std::size_t count);
 
     /**
      * @brief concatenates the data of two objects
@@ -137,16 +144,7 @@ public:
      *
      * @return const reference to the data vector
      */
-    inline std::vector<std::byte> const &data() const { return byteData_; }
-
-    /**
-     * @brief Return reference to the undelying data vector
-     *
-     * @return reference to the data vector
-     */
-    inline std::vector<std::byte> &data() { return byteData_; }
-
-    std::vector<unsigned char> dataChar() const;
+    inline const Botan::secure_vector<std::uint8_t> &secureData() const { return byteData_; }
 
     /**
      * @brief Return size of underlying ByteData vector
@@ -210,10 +208,7 @@ private:
     /**
      * underlying object byte data
      */
-    // TODO this has to be implemented with secure allocator to securely wipe data
-    // also in all the places where vector is returned (and maybe in other classes as well)
-    // Botan::secure_vector<std::byte> byteData_;
-    std::vector<std::byte> byteData_;
+    Botan::secure_vector<std::uint8_t> byteData_;
 
     /**
      * @brief parses string data as hex. Should be called from constructor
@@ -277,8 +272,8 @@ private:
      * @param result the result to store, it's size should be the same
      * as size of lhs
      */
-    static void xorVectors(const std::vector<std::byte> &lhs, const std::vector<std::byte> &rhs,
-                           std::vector<std::byte> &result);
+    static void xorVectors(const Botan::secure_vector<std::uint8_t> &lhs, const Botan::secure_vector<std::uint8_t> &rhs,
+                           Botan::secure_vector<std::uint8_t> &result);
 
     /**
      * @brief return string representation without any Encoding
@@ -288,7 +283,7 @@ private:
      *
      * @return string
      */
-    static std::string strPlainInternal(const std::vector<std::byte> &data);
+    static std::string strPlainInternal(const Botan::secure_vector<std::uint8_t> &data);
 
     /**
      * @brief return string representation in hex Encoding of the data in range

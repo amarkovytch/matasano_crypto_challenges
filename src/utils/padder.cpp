@@ -6,7 +6,7 @@
 
 ByteData Padder::pad(const ByteData &data, std::uint8_t bytesNumToPad)
 {
-    std::vector pad(bytesNumToPad, std::byte{bytesNumToPad});
+    std::vector pad(bytesNumToPad, bytesNumToPad);
     return data + pad;
 }
 
@@ -33,7 +33,7 @@ ByteData Padder::removePadding(const ByteData &paddedBlock)
         return paddedBlock;
     }
 
-    std::uint8_t bytesToRemove = std::to_integer<std::uint8_t>(paddedBlock.data().back());
+    std::uint8_t bytesToRemove = paddedBlock.secureData().back();
 
     THROW_IF(bytesToRemove > paddedBlock.size(),
              "the padding is wrong, there are " + std::to_string(bytesToRemove) +
@@ -50,6 +50,6 @@ void Padder::validatePadding(const ByteData &paddedBlock, std::uint8_t padByte)
 {
     for (std::size_t i = paddedBlock.size() - padByte; i < paddedBlock.size(); i++)
     {
-        THROW_IF(paddedBlock.data().at(i) != std::byte{padByte}, "the padding is wrong", std::invalid_argument);
+        THROW_IF(paddedBlock.secureData().at(i) != padByte, "the padding is wrong", std::invalid_argument);
     }
 }

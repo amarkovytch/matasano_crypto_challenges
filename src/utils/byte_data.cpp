@@ -23,19 +23,15 @@ ByteData::ByteData(const std::string &str, Encoding strEnc)
     }
 }
 
-ByteData::ByteData(std::byte b) { byteData_.push_back(b); }
+ByteData::ByteData(std::uint8_t b) { byteData_.push_back(b); }
 
-ByteData::ByteData(std::vector<std::byte> bytes)
-{
-    // THROW_IF(bytes.empty(), "can't construct from empty vector", std::invalid_argument);
-    byteData_ = bytes;
-}
+ByteData::ByteData(const Botan::secure_vector<std::uint8_t> &bytes) : byteData_(bytes) {}
 
-ByteData::ByteData(std::vector<unsigned char> bytes)
+ByteData::ByteData(const std::vector<std::uint8_t> &bytes)
 {
     for (auto b : bytes)
     {
-        byteData_.push_back(std::byte{b});
+        byteData_.push_back(b);
     }
 }
 
@@ -58,8 +54,7 @@ void ByteData::parsePlain(const std::string &plain)
 
     for (unsigned char ch : plain)
     {
-        std::byte b{ch};
-        byteData_.push_back(b);
+        byteData_.push_back(ch);
     }
 }
 
@@ -78,7 +73,7 @@ void ByteData::parseHexInternal(const std::string &hex)
     {
         auto number = Convert::parseNumFromStr(hex.substr(i, 2), 16);
         LOGIC_ASSERT(number <= 255);
-        std::byte b{static_cast<unsigned char>(number)};
+        std::uint8_t b{static_cast<std::uint8_t>(number)};
         byteData_.push_back(b);
     }
 }
@@ -125,7 +120,7 @@ ByteData operator^(ByteData lhs, const ByteData &rhs)
     THROW_IF(lhs.size() == 0, "lhs is empty", std::invalid_argument);
     THROW_IF(rhs.size() == 0, "rhs is empty", std::invalid_argument);
 
-    ByteData res(std::vector<std::byte>(lhs.size()));
+    ByteData res = lhs;
 
     ByteData::xorVectors(lhs.byteData_, rhs.byteData_, res.byteData_);
 
@@ -177,7 +172,7 @@ bool ByteData::eqCyclicallyInternal(const ByteData &lhs, const ByteData &rhs) co
 
     for (std::size_t i = 0; i < lhs.size(); i++)
     {
-        if (lhs.data().at(i) != rhs.data().at(i % rhs.size()))
+        if (lhs.secureData().at(i) != rhs.secureData().at(i % rhs.size()))
         {
             return false;
         }
@@ -186,8 +181,8 @@ bool ByteData::eqCyclicallyInternal(const ByteData &lhs, const ByteData &rhs) co
     return true;
 }
 
-void ByteData::xorVectors(const std::vector<std::byte> &lhs, const std::vector<std::byte> &rhs,
-                          std::vector<std::byte> &result)
+void ByteData::xorVectors(const Botan::secure_vector<std::uint8_t> &lhs, const Botan::secure_vector<std::uint8_t> &rhs,
+                          Botan::secure_vector<std::uint8_t> &result)
 {
     LOGIC_ASSERT(lhs.size() != 0);
     LOGIC_ASSERT(rhs.size() != 0);
@@ -219,13 +214,13 @@ std::string ByteData::str(Encoding strEnc) const
 
 std::string ByteData::strPlain() const { return strPlainInternal(byteData_); }
 
-std::string ByteData::strPlainInternal(const std::vector<std::byte> &data)
+std::string ByteData::strPlainInternal(const Botan::secure_vector<std::uint8_t> &data)
 {
     std::string res;
 
-    for (std::byte b : data)
+    for (std::uint8_t b : data)
     {
-        res += std::to_integer<unsigned char>(b);
+        res += b;
     }
 
     return res;
@@ -239,7 +234,7 @@ std::string ByteData::strHexInternal(std::size_t start, std::size_t end) const
 
     for (auto i = start; i < end; i++)
     {
-        res += Convert::numToStr(std::to_integer<unsigned char>(byteData_.at(i)), 2, 16);
+        res += Convert::numToStr(byteData_.at(i), 2, 16);
     }
 
     return res;
@@ -293,9 +288,9 @@ double ByteData::hamming(const ByteData &another)
     double byteFraction = 1.0 / (tmp.size());
     double result = 0;
 
-    for (auto b : tmp.data())
+    for (auto b : tmp.secureData())
     {
-        std::bitset<8> bitset(std::to_integer<unsigned char>(b));
+        std::bitset<8> bitset(b);
         result += bitset.count() * byteFraction;
     }
 
@@ -369,17 +364,6 @@ std::vector<ByteData> ByteData::extractColumns(std::size_t maxNumColumns, std::s
         }
 
         result.at(currColumn) += byteData_.at(i);
-    }
-
-    return result;
-}
-
-std::vector<unsigned char> ByteData::dataChar() const
-{
-    std::vector<unsigned char> result;
-    for (auto byte : byteData_)
-    {
-        result.push_back(std::to_integer<unsigned char>(byte));
     }
 
     return result;
