@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "general_utils.h"
-
 /**
  * @brief Class for holding byte data with a set of usefull operations
  */
@@ -49,6 +47,13 @@ public:
     ByteData(std::uint8_t b);
 
     /**
+     * @brief Construct a new Byte Data object with size 0's
+     *
+     * @param size the number of 0 to fill in underying data
+     */
+    explicit ByteData(std::size_t size) : ByteData(std::vector(size, std::uint8_t{0})){};
+
+    /**
      * @brief Construct a new ByteData object from a vector of bytes
      *
      * @param bytes bytes to construct object from
@@ -61,13 +66,6 @@ public:
      * @param bytes bytes to construct object from
      */
     ByteData(const Botan::secure_vector<std::uint8_t> &bytes);
-
-    /**
-     * @brief Make sure underlying data vector is at least count length
-     *
-     * @param count
-     */
-    void reserve(std::size_t count);
 
     /**
      * @brief concatenates the data of two objects
@@ -145,6 +143,13 @@ public:
      * @return const reference to the data vector
      */
     inline const Botan::secure_vector<std::uint8_t> &secureData() const { return byteData_; }
+
+    /**
+     * @brief Return reference to the undelying data vector
+     *
+     * @return reference to the data vector
+     */
+    inline Botan::secure_vector<std::uint8_t> &secureData() { return byteData_; }
 
     /**
      * @brief Return size of underlying ByteData vector

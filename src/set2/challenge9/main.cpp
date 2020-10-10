@@ -12,7 +12,7 @@ int main()
     ByteData data(INPUT, ByteData::Encoding::plain);
     auto padded = Padder::pad(data, 4);
 
-    VALIDATE_EQ(EXP_OUTPUT, padded.str(ByteData::Encoding::plain));
+    VALIDATE_STR_EQ(EXP_OUTPUT, padded.str(ByteData::Encoding::plain));
 
     std::cout << "Success !" << std::endl;
 

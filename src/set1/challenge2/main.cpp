@@ -12,7 +12,7 @@ int main()
 {
     ByteData x(INPUT1);
     ByteData y(INPUT2);
-    VALIDATE_EQ((x ^ y).str(), EXP_OUTPUT);
+    VALIDATE_STR_EQ((x ^ y).str(), EXP_OUTPUT);
 
     std::cout << "Success !" << std::endl;
 

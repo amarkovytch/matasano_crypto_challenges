@@ -14,17 +14,25 @@
     }
 
 /**
+ * @brief Throws runtime_error exception if 2 given values are not equal.
+ * Used to validate expected output in exercises
+ */
+#define VALIDATE_EQ(val1, val2)                                                                                        \
+    THROW_IF((val1) != (val2), std::to_string(val1) + " is not equal to " + std::to_string(val2) + FILE_LINE,          \
+             std::runtime_error);
+
+/**
  * @brief Throws runtime_error exception if 2 given strings are not equal.
  * Used to validate expected output in exercises
  */
-#define VALIDATE_EQ(str1, str2)                                                                                        \
+#define VALIDATE_STR_EQ(str1, str2)                                                                                    \
     THROW_IF((str1) != (str2), str1 + " is not equal to " + str2 + FILE_LINE, std::runtime_error);
 
 /**
  * @brief Throws runtime_error exception if 2 given strings are equal.
  * Used to validate expected output in exercises
  */
-#define VALIDATE_NOT_EQ(str1, str2)                                                                                    \
+#define VALIDATE_STR_NOT_EQ(str1, str2)                                                                                \
     THROW_IF((str1) == (str2), str1 + " is equal to " + str2 + FILE_LINE, std::runtime_error);
 
 /**

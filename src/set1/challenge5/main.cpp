@@ -26,7 +26,7 @@ int main()
 {
     auto result = ByteData(INPUT, ByteData::Encoding::plain) ^ ByteData(KEY, ByteData::Encoding::plain);
 
-    VALIDATE_EQ(OUTPUT, result.str());
+    VALIDATE_STR_EQ(OUTPUT, result.str());
 
     std::cout << "Success !" << std::endl;
 

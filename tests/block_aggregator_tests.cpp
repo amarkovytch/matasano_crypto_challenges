@@ -92,3 +92,37 @@ TEST(CryptoBlockAggregator, TestUnpadOnAggregateBlock)
 
     ASSERT_EQ(source, aggregator.output());
 }
+
+TEST(CryptoBlockAggregator, TestUnpadOnAggregateBlockWholeBlock)
+{
+    ByteData source("1234567890", ByteData::Encoding::plain);
+    auto padding = std::vector(5, std::uint8_t{5});
+
+    CryptoBlockAggregator aggregator(source + padding, CryptoBlockAggregator::Padding::UnpadOnAggregateBlock, 5);
+
+    for (const auto &block : aggregator.blocksFromSource())
+    {
+        ASSERT_EQ(5, block.size());
+
+        aggregator.aggregateBlock(block);
+    }
+
+    ASSERT_EQ(source, aggregator.output());
+}
+
+TEST(CryptoBlockAggregator, TestPadOnGetBlockWholeBlock)
+{
+    ByteData source("1234567890", ByteData::Encoding::plain);
+    auto padding = std::vector(5, std::uint8_t{5});
+
+    CryptoBlockAggregator aggregator(source, CryptoBlockAggregator::Padding::PadOnGetBlock, 5);
+
+    for (const auto &block : aggregator.blocksFromSource())
+    {
+        ASSERT_TRUE(5 == block.size());
+
+        aggregator.aggregateBlock(block);
+    }
+
+    ASSERT_EQ(source + padding, aggregator.output());
+}

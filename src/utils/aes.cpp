@@ -6,6 +6,7 @@
 
 #include "aes.h"
 #include "crypto_block_aggregator.h"
+#include "crypto_constants.h"
 #include "matasano_asserts.h"
 #include "padder.h"
 
@@ -58,19 +59,19 @@ ByteData Aes::encryptDecrypt(const ByteData &data, bool encrypt) const
 
 ByteData Aes::ecbEncryptDecryptBlock(const ByteData &block, bool encrypt) const
 {
-    LOGIC_ASSERT(block.size() % BLOCK_SIZE_BYTES == 0);
-    std::vector<unsigned char> result(block.size(), 0);
+    LOGIC_ASSERT(block.size() % CryptoConstants::BLOCK_SIZE_BYTES == 0);
+    ByteData result(block.size());
 
     CryptoPP::SecByteBlock key(key_.secureData().data(), key_.size());
     if (encrypt)
     {
         CryptoPP::ECB_Mode<CryptoPP::AES>::Encryption ecbEncryption(key, key.size());
-        ecbEncryption.ProcessData(result.data(), block.secureData().data(), result.size());
+        ecbEncryption.ProcessData(result.secureData().data(), block.secureData().data(), result.size());
     }
     else
     {
         CryptoPP::ECB_Mode<CryptoPP::AES>::Decryption ecbDecryption(key, key.size());
-        ecbDecryption.ProcessData(result.data(), block.secureData().data(), result.size());
+        ecbDecryption.ProcessData(result.secureData().data(), block.secureData().data(), result.size());
     }
 
     return result;

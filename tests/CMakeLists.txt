@@ -14,7 +14,7 @@ file(GLOB_RECURSE source_list "*.cpp" "*.hpp")
 add_executable(utils_tests ${source_list})
 
 # Link test executable against gtest & gtest_main
-target_link_libraries(utils_tests LINK_PUBLIC ${GTEST_BOTH_LIBRARIES} pthread gmock gtest utils cryptopp)
+target_link_libraries(utils_tests LINK_PUBLIC ${GTEST_BOTH_LIBRARIES} pthread gmock gtest utils)
 
 add_test(
     NAME utils_tests

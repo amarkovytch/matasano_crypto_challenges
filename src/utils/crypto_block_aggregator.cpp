@@ -9,6 +9,8 @@ CryptoBlockAggregator::CryptoBlockAggregator(const ByteData &source, Padding pad
              std::invalid_argument);
     THROW_IF(padding_ == Padding::UnpadOnAggregateBlock && source_.back().size() != blockSize_,
              "when Padding is UnpadOnAggregateBlock, source data should be whole blocks", std::invalid_argument);
+
+    // special case for UnpadOnAggregateBlock and 2 last block are
 }
 
 CryptoBlockAggregator::Iterator CryptoBlockAggregator::blocksFromSource()
@@ -17,7 +19,14 @@ CryptoBlockAggregator::Iterator CryptoBlockAggregator::blocksFromSource()
 
     if (padding_ == Padding::PadOnGetBlock)
     {
-        source_.back() = Padder::padToBlockSize(source_.back(), blockSize_);
+        // there can be 1 or 2 blocks after padding
+        auto paddedBlocks = Padder::padToBlockSize(source_.back(), blockSize_).extractRows(blockSize_);
+        source_.pop_back();
+
+        for (const auto &block : paddedBlocks)
+        {
+            source_.push_back(block);
+        }
     }
 
     lastActionGet_ = true;
@@ -29,7 +38,7 @@ void CryptoBlockAggregator::aggregateBlock(const ByteData &block)
 {
     THROW_IF(!lastActionGet_, "can't peform aggregateOutput twice", std::runtime_error);
     THROW_IF(block.size() != blockSize_,
-             "given input size " + std::to_string(block.size()) + " is not equal to block size " +
+             "given input size " + std::to_string(block.size()) + " is not equal to block size" +
                  std::to_string(blockSize_),
              std::invalid_argument);
 

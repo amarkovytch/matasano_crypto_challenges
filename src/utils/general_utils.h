@@ -1,11 +1,13 @@
 #ifndef MATASANO_GENERAL_UTILS_H
 #define MATASANO_GENERAL_UTILS_H
 
-#define __STDC_WANT_LIB_EXT1__ 1
-#include <string.h>
-
 #include <cstddef>
 #include <cstdint>
+#include <random>
+#include <string.h>
+
+#include "byte_data.h"
+#include "matasano_asserts.h"
 
 #define DEFAULT_COPY_MOVE_CONSTRUCTORS(class_name)                                                                     \
     class_name(const class_name &) = default;                                                                          \
@@ -14,29 +16,36 @@
     class_name &operator=(class_name &&) = default // ; omitted on purpose
 
 /**
- * @brief A collection of various security related utils
+ * @brief A collection of various utils
  */
-class GeneralUtils
+namespace GeneralUtils
 {
-public:
-    /**
-     * @brief wipe given data securely (such that compiler does not optimize this out)
-     *
-     * @param data data to wipe
-     * @param size size of data to wipe
-     */
-    inline static void SecureWipeData(void *data, std::size_t size)
-    {
-#ifdef __STDC_LIB_EXT1__
-        memset_s(data, size, 0, size);
-#else
-        volatile uint8_t *p = reinterpret_cast<volatile uint8_t *>(data);
-        for (size_t i = 0; i != size; ++i)
-        {
-            p[i] = 0;
-        }
-#endif
-    }
-};
+/**
+ * @brief Generates random number within the given range [from, to]
+ *
+ * @param from from and including this number
+ * @param to up to and including this number
+ * @return random number
+ *
+ * @throw std::invalid_argument if to < from
+ */
+template <typename T> requires std::is_integral_v<T> T randomNum(T from, T to)
+{
+    THROW_IF(to < from, "wrong range", std::invalid_argument);
+
+    auto distribution_ = std::uniform_int_distribution<T>(from, to);
+    auto random_engine_ = std::mt19937{std::random_device{}()};
+    return distribution_(random_engine_);
+}
+
+/**
+ * @brief Creates ByteData with length of 'length' filled with random bytes
+ *
+ * @param length the length of the random ByteData
+ * @return ByteData the random ByteData
+ */
+ByteData randomData(std::size_t length);
+
+} // namespace GeneralUtils
 
 #endif

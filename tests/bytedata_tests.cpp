@@ -441,5 +441,20 @@ TEST(ByteDataTest, TestSubDataInvalidRange)
     ByteData b1("1234");
     ASSERT_THROW(b1.subData(5, 10), std::invalid_argument);
     ASSERT_THROW(b1.subData(1, 10), std::invalid_argument);
-    ASSERT_THROW(b1.subData(1, 0), std::invalid_argument);
+}
+
+TEST(ByteDataTest, TestSubDataEmpty)
+{
+    ByteData b1("1234", ByteData::Encoding::plain);
+    ASSERT_EQ(ByteData(), b1.subData(0, 0));
+    ASSERT_EQ(ByteData(), b1.subData(2, 0));
+}
+
+TEST(ByteDataTest, SizeConstructor)
+{
+    ByteData b(std::size_t{10});
+    std::vector vec(10, std::uint8_t{0});
+
+    ASSERT_EQ(b.size(), vec.size());
+    ASSERT_EQ(0, memcmp(b.secureData().data(), vec.data(), b.size()));
 }

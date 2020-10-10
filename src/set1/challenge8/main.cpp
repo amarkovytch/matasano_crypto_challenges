@@ -49,7 +49,7 @@ int main()
         }
     }
 
-    VALIDATE_NOT_EQ(repeatingPattern, "");
+    VALIDATE_STR_NOT_EQ(repeatingPattern, "");
 
     std::cout << "This line is ECB encoded:" << std::endl;
     std::cout << ecbEncodedLine << std::endl;

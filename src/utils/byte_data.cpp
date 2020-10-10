@@ -376,7 +376,5 @@ ByteData ByteData::subData(std::size_t start, std::size_t count) const
                  " fall beyond the size of data:" + std::to_string(size()),
              std::invalid_argument);
 
-    THROW_IF(0 == count, "count can't be 0", std::invalid_argument);
-
     return ByteData(std::vector(byteData_.begin() + start, byteData_.begin() + start + count));
 }

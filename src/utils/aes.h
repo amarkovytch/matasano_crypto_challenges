@@ -64,11 +64,6 @@ public:
 
 private:
     /**
-     * @brief Block size in bytes
-     */
-    static constexpr std::uint8_t BLOCK_SIZE_BYTES = 16;
-
-    /**
      * @brief encryption key
      */
     ByteData key_;
