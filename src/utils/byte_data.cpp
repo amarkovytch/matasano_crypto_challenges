@@ -23,18 +23,6 @@ ByteData::ByteData(const std::string &str, Encoding strEnc)
     }
 }
 
-ByteData::ByteData(std::uint8_t b) { byteData_.push_back(b); }
-
-ByteData::ByteData(const Botan::secure_vector<std::uint8_t> &bytes) : byteData_(bytes) {}
-
-ByteData::ByteData(const std::vector<std::uint8_t> &bytes)
-{
-    for (auto b : bytes)
-    {
-        byteData_.push_back(b);
-    }
-}
-
 ByteData operator+(ByteData lhs, const ByteData &rhs)
 {
     ByteData res(lhs.byteData_);
@@ -333,6 +321,19 @@ std::vector<ByteData> ByteData::extractRows(std::size_t elmsInRow, std::size_t m
     return result;
 }
 
+ByteData ByteData::extractRow(std::size_t elmsInRow, std::size_t rowNum) const
+{
+    THROW_IF(size() == 0, "can't extract rows from empty object", std::invalid_argument);
+    ByteData res;
+
+    for (std::size_t i = elmsInRow * rowNum; (i < elmsInRow * rowNum + elmsInRow) && (i < size()); i++)
+    {
+        res += byteData_.at(i);
+    }
+
+    return res;
+}
+
 std::vector<ByteData> ByteData::extractColumns(std::size_t maxNumColumns, std::size_t maxElmsInColumn) const
 {
     THROW_IF(size() == 0, "can't extract columnts from empty object", std::invalid_argument);
@@ -376,5 +377,5 @@ ByteData ByteData::subData(std::size_t start, std::size_t count) const
                  " fall beyond the size of data:" + std::to_string(size()),
              std::invalid_argument);
 
-    return ByteData(std::vector(byteData_.begin() + start, byteData_.begin() + start + count));
+    return ByteData(Botan::secure_vector<std::uint8_t>(byteData_.begin() + start, byteData_.begin() + start + count));
 }

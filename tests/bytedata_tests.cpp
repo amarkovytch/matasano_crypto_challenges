@@ -256,7 +256,6 @@ TEST(ByteDataTest, HammingTestWokka)
     ASSERT_EQ(37.0 / 14.0, b1.hamming(b2));
 }
 
-// std::vector<ByteData> extractRows(std::size_t elmsInRow, std::size_t maxRows = 0);
 TEST(ByteDataTest, ExtractRowsElmsZero)
 {
     std::vector vec{std::uint8_t{1}, std::uint8_t{2}, std::uint8_t{3}, std::uint8_t{4}, std::uint8_t{5},
@@ -309,6 +308,35 @@ TEST(ByteDataTest, ExtractRowsLargeMaxRows)
     rows = bd.extractRows(100, 0);
     ASSERT_EQ(1, rows.size());
     ASSERT_EQ("1234567890", rows.at(0).str(ByteData::Encoding::plain));
+}
+
+TEST(ByteDataTest, ExtractRowSanity)
+{
+    ByteData bd("1234567890", ByteData::Encoding::plain);
+    auto row = bd.extractRow(3, 0);
+    ASSERT_EQ(3, row.size());
+    ASSERT_EQ(ByteData("123", ByteData::Encoding::plain), row);
+
+    row = bd.extractRow(4, 1);
+    ASSERT_EQ(4, row.size());
+    ASSERT_EQ(ByteData("5678", ByteData::Encoding::plain), row);
+
+    row = bd.extractRow(7, 1);
+    ASSERT_EQ(3, row.size());
+    ASSERT_EQ(ByteData("890", ByteData::Encoding::plain), row);
+}
+
+TEST(ByteDataTest, ExtractRowEmpty)
+{
+    ByteData bd;
+    ASSERT_THROW(bd.extractRow(2, 0), std::invalid_argument);
+}
+
+TEST(ByteDataTest, ExtractRowLast)
+{
+    ByteData bd("1234567890", ByteData::Encoding::plain);
+    ASSERT_EQ(ByteData(), bd.extractRow(3, 10));
+    ASSERT_EQ(ByteData(), bd.extractRow(10, 1));
 }
 
 TEST(ByteDataTest, ExtractColumnsZero)

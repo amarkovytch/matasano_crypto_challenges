@@ -61,6 +61,12 @@
 #define LOGIC_ASSERT(cond) THROW_IF(!(cond), std::string(#cond) + " is violated " + FILE_LINE, std::logic_error);
 
 /**
+ * @brief Throws std::logic_error if this point in code is reached
+ */
+#define LOGIC_SHOULD_NOT_REACH_THAT_POINT()                                                                            \
+    THROW_IF(true, std::string("this point in code should not have been reached ...") + FILE_LINE, std::logic_error);
+
+/**
  * @brief Generates __FILE__:__LINE__ string
  * Used in internal assertions
  */

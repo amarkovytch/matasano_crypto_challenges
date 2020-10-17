@@ -44,28 +44,27 @@ public:
      *
      * @param b byte to construct object from
      */
-    ByteData(std::uint8_t b);
-
+    ByteData(std::uint8_t b) : byteData_(1, b){};
     /**
      * @brief Construct a new Byte Data object with size 0's
      *
      * @param size the number of 0 to fill in underying data
      */
-    explicit ByteData(std::size_t size) : ByteData(std::vector(size, std::uint8_t{0})){};
+    explicit ByteData(std::size_t size) : byteData_(size, std::uint8_t{0}){};
 
     /**
      * @brief Construct a new ByteData object from a vector of bytes
      *
      * @param bytes bytes to construct object from
      */
-    ByteData(const std::vector<std::uint8_t> &bytes);
+    ByteData(const std::vector<std::uint8_t> &bytes) : byteData_(bytes.begin(), bytes.end()){};
 
     /**
      * @brief Construct a new ByteData object from a vector of secure bytes
      *
      * @param bytes bytes to construct object from
      */
-    ByteData(const Botan::secure_vector<std::uint8_t> &bytes);
+    ByteData(const Botan::secure_vector<std::uint8_t> bytes) : byteData_(std::move(bytes)){};
 
     /**
      * @brief concatenates the data of two objects
@@ -175,9 +174,14 @@ public:
      * @param count the number of elements to extract
      * @return sub ByteData
      *
-     * @throw std::invalid_argument if start / count do not fall within the range of data in ByteData or if count is 0
+     * @throw std::invalid_argument if start / count do not fall within the range of data in ByteData
      */
     ByteData subData(std::size_t start, std::size_t count) const;
+
+    /**
+     * @brief pops back the last symbol
+     */
+    inline void popBack() { byteData_.pop_back(); };
 
     /**
      * @brief Extract consequetive elements from byte data. Each 'elmsInRow' elements form one row. Stop after
@@ -190,8 +194,20 @@ public:
      *
      * @throw std::invalid_argument if elmsInRow is 0, or this object is empty
      */
+    // TODO consider using span instead
     std::vector<ByteData> extractRows(std::size_t elmsInRow, std::size_t maxRows = 0) const;
 
+    /**
+     * @brief Extract the rowNum's row of consequetive elements from byte data. The number of elements in a row is
+     * 'elmsInRow' elements form one row. The last row could have less elements than elmsInRow
+     * This object should not be empty
+     *
+     * @param elmsInRow the maximum number elements in the row to extract
+     * @param rowNum row's number
+     * @return extracted ByteData, will be empty if rowNum does not contain any elements
+     */
+    // TODO consider using span instead
+    ByteData extractRow(std::size_t elmsInRow, std::size_t rowNum) const;
     /**
      * @brief Exctract each 'numColumns'-s element from byte data. For example if numColumns is 4 then this will be the
      * resulting vector (numbers are indexes of the elements in the original byte data vector):
@@ -207,6 +223,7 @@ public:
      *
      * @throw std::invalid_argument if numColumns is 0, or this object is empty
      */
+    // TODO consider using span instead
     std::vector<ByteData> extractColumns(std::size_t maxNumColumns, std::size_t maxElmsInColumn = 0) const;
 
 private:

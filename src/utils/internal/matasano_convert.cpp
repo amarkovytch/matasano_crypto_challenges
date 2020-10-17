@@ -136,6 +136,7 @@ std::string Convert::padWith(const std::string &str, const std::string &pad, std
     return padded;
 }
 
+// TODO consider using to_char here and in other places
 std::string Convert::numToStr(unsigned long long num, std::size_t min_width, int base)
 {
     std::ostringstream os;

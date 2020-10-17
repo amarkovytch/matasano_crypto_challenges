@@ -31,8 +31,9 @@ int main()
 
     for (std::size_t i = 0; i < 1000; i++)
     {
-        VALIDATE_EQ(isEcb,
-                    AesEcbOracle::isEcb([&isEcb](const ByteData &plain) { return randomEncryptor(plain, isEcb); }));
+        AesEcbOracle oracle([&isEcb](const ByteData &plain) { return randomEncryptor(plain, isEcb); },
+                            AesEcbOracle::EcryptorType::SecretUpToBlock1_Plain_SecretUpToBlock2);
+        VALIDATE_EQ(isEcb, oracle.isEcb());
     }
 
     std::cout << "Success" << std::endl;

@@ -50,10 +50,10 @@ ByteData Aes::encryptDecrypt(const ByteData &data, bool encrypt) const
     case (Aes::Mode::cbc):
         return encryptDecryptCbc(data, encrypt);
     default:
-        LOGIC_ASSERT(true);
+        LOGIC_SHOULD_NOT_REACH_THAT_POINT();
     }
 
-    LOGIC_ASSERT(true);
+    LOGIC_SHOULD_NOT_REACH_THAT_POINT();
     return ByteData();
 }
 

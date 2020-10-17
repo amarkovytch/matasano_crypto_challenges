@@ -14,9 +14,10 @@ TEST(EcbOracletTest, TestEcb)
     {
         auto prepend = GeneralUtils::randomData(GeneralUtils::randomNum(std::size_t{0}, i));
         auto append = GeneralUtils::randomData(GeneralUtils::randomNum(std::size_t{0}, i));
+        AesEcbOracle oracle([&](const ByteData &plain) -> ByteData { return ecb.encrypt(prepend + plain + append); },
+                            AesEcbOracle::EcryptorType::SecretUpToBlock1_Plain_SecretUpToBlock2);
 
-        ASSERT_TRUE(AesEcbOracle::isEcb(
-            [&](const ByteData &plain) -> ByteData { return ecb.encrypt(prepend + plain + append); }));
+        ASSERT_TRUE(oracle.isEcb());
     }
 }
 
@@ -31,7 +32,63 @@ TEST(EcbOracletTest, TestNotEcb)
         auto prepend = GeneralUtils::randomData(GeneralUtils::randomNum(std::size_t{0}, i));
         auto append = GeneralUtils::randomData(GeneralUtils::randomNum(std::size_t{0}, i));
 
-        ASSERT_FALSE(AesEcbOracle::isEcb(
-            [&](const ByteData &plain) -> ByteData { return ecb.encrypt(prepend + plain + append); }));
+        AesEcbOracle oracle([&](const ByteData &plain) -> ByteData { return ecb.encrypt(prepend + plain + append); },
+                            AesEcbOracle::EcryptorType::SecretUpToBlock1_Plain_SecretUpToBlock2);
+
+        ASSERT_FALSE(oracle.isEcb());
     }
+}
+
+TEST(EcbOracletTest, WrongEncryptorType)
+{
+    auto key = GeneralUtils::randomData(16);
+    auto secret = GeneralUtils::randomData(40);
+
+    Aes ecb(key, ByteData(), Aes::Mode::ecb);
+
+    AesEcbOracle oracle([&](const ByteData &plain) -> ByteData { return ecb.encrypt(plain + secret); },
+                        AesEcbOracle::EcryptorType::SecretUpToBlock1_Plain_SecretUpToBlock2);
+
+    ASSERT_THROW(oracle.recoverSecret(), std::invalid_argument);
+}
+
+TEST(EcbOracletTest, TestRetrieveRandomSecretData)
+{
+    auto key = GeneralUtils::randomData(16);
+    auto secret = GeneralUtils::randomData(40);
+
+    Aes ecb(key, ByteData(), Aes::Mode::ecb);
+
+    AesEcbOracle oracle([&](const ByteData &plain) -> ByteData { return ecb.encrypt(plain + secret); },
+                        AesEcbOracle::EcryptorType::Plain_Secret);
+
+    auto recovered = oracle.recoverSecret();
+    ASSERT_EQ(secret, recovered);
+}
+
+TEST(EcbOracletTest, TestRetrieveRandomSecretDataBlockSize)
+{
+    auto key = GeneralUtils::randomData(16);
+    auto secret = GeneralUtils::randomData(16 * 4);
+
+    Aes ecb(key, ByteData(), Aes::Mode::ecb);
+
+    AesEcbOracle oracle([&](const ByteData &plain) -> ByteData { return ecb.encrypt(plain + secret); },
+                        AesEcbOracle::EcryptorType::Plain_Secret);
+
+    auto recovered = oracle.recoverSecret();
+    ASSERT_EQ(secret, recovered);
+}
+
+TEST(EcbOracletTest, TestRetrieveKnownSecretData)
+{
+    auto key = GeneralUtils::randomData(16);
+    auto secret = ByteData("0123456789abcdefrtyu", ByteData::Encoding::plain);
+    Aes ecb(key, ByteData(), Aes::Mode::ecb);
+
+    AesEcbOracle oracle([&](const ByteData &plain) -> ByteData { return ecb.encrypt(plain + secret); },
+                        AesEcbOracle::EcryptorType::Plain_Secret);
+
+    auto recovered = oracle.recoverSecret();
+    ASSERT_EQ(secret, recovered);
 }
