@@ -67,6 +67,24 @@
     THROW_IF(true, std::string("this point in code should not have been reached ...") + FILE_LINE, std::logic_error);
 
 /**
+ * @brief Makes sure there is an exception 'exc' while executing stmt
+ */
+#define VALIDATE_EXCEPTION(stmt, exc)                                                                                  \
+    {                                                                                                                  \
+        bool gotExc = false;                                                                                           \
+        try                                                                                                            \
+        {                                                                                                              \
+            stmt;                                                                                                      \
+        }                                                                                                              \
+        catch (const exc &)                                                                                            \
+        {                                                                                                              \
+            gotExc = true;                                                                                             \
+        }                                                                                                              \
+        THROW_IF(!gotExc, std::string("expected exception ") + std::string(#exc) + ", never got one" + FILE_LINE,      \
+                 std::logic_error);                                                                                    \
+    }
+
+/**
  * @brief Generates __FILE__:__LINE__ string
  * Used in internal assertions
  */

@@ -40,7 +40,7 @@ public:
      * @param block padded block
      * @return ByteData block without padding
      *
-     * @throw std::invalid_argument if size of padding to be removed is bigger than the total size of the block
+     * @throw std::invalid_argument if padding is invalid
      */
     static ByteData removePadding(const ByteData &paddedBlock);
 

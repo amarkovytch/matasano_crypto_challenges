@@ -20,8 +20,6 @@ static ByteData randomEncryptor(const ByteData &plain)
 
 int main()
 {
-    using namespace std::placeholders;
-
     AesEcbOracle oracle(randomEncryptor, AesEcbOracle::EncryptorType::ConstantRandom_Plain_Secret);
     auto recovered = oracle.recoverSecret();
 
