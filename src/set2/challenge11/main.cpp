@@ -32,7 +32,7 @@ int main()
     for (std::size_t i = 0; i < 1000; i++)
     {
         AesEcbOracle oracle([&isEcb](const ByteData &plain) { return randomEncryptor(plain, isEcb); },
-                            AesEcbOracle::EcryptorType::SecretUpToBlock1_Plain_SecretUpToBlock2);
+                            AesEcbOracle::EncryptorType::RandomUpToBlock1_Plain_RandomUpToBlock2);
         VALIDATE_EQ(isEcb, oracle.isEcb());
     }
 

@@ -35,7 +35,7 @@ public:
      * Also on UnpadOnAggregateBlock if source data is not whole blocks (because in this case we assume that it is
      * padded encrypted data)
      */
-    CryptoBlockAggregator(const ByteData &source, Padding padding, std::size_t blockSize = 16);
+    CryptoBlockAggregator(const ByteData &source, Padding padding, std::uint8_t blockSize = 16);
 
     /**
      * @brief Return the next block from source. If the block is the last one and Padding was PadOnGetBlock - pad it
@@ -108,7 +108,7 @@ private:
     /**
      * @brief the block size
      */
-    std::size_t blockSize_;
+    std::uint8_t blockSize_;
 
     /**
      * @brief if true - last action was getBlockFromSource. Inizialized to false to enable the first getBlockFromSource

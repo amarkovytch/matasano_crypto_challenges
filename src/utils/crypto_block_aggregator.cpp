@@ -2,7 +2,7 @@
 #include "matasano_asserts.h"
 #include "padder.h"
 
-CryptoBlockAggregator::CryptoBlockAggregator(const ByteData &source, Padding padding, std::size_t blockSize)
+CryptoBlockAggregator::CryptoBlockAggregator(const ByteData &source, Padding padding, std::uint8_t blockSize)
     : source_(source.extractRows(blockSize)), padding_(padding), blockSize_(blockSize)
 {
     THROW_IF(padding != Padding::PadOnGetBlock && padding_ != Padding::UnpadOnAggregateBlock, "invalid padding",
@@ -38,7 +38,7 @@ void CryptoBlockAggregator::aggregateBlock(const ByteData &block)
 {
     THROW_IF(!lastActionGet_, "can't peform aggregateOutput twice", std::runtime_error);
     THROW_IF(block.size() != blockSize_,
-             "given input size " + std::to_string(block.size()) + " is not equal to block size" +
+             "given input size " + std::to_string(block.size()) + " is not equal to block size " +
                  std::to_string(blockSize_),
              std::invalid_argument);
 

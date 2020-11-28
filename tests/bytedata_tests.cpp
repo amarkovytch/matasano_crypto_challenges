@@ -480,7 +480,7 @@ TEST(ByteDataTest, TestSubDataEmpty)
 
 TEST(ByteDataTest, SizeConstructor)
 {
-    ByteData b(std::size_t{10});
+    ByteData b(0, std::size_t{10});
     std::vector vec(10, std::uint8_t{0});
 
     ASSERT_EQ(b.size(), vec.size());

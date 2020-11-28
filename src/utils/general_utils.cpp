@@ -6,7 +6,7 @@
 
 ByteData GeneralUtils::randomData(std::size_t length)
 {
-    ByteData res(length);
+    ByteData res(0, length);
 
     std::generate(res.secureData().begin(), res.secureData().end(),
                   []() { return GeneralUtils::randomNum<std::uint8_t>(0, std::numeric_limits<std::uint8_t>::max()); });

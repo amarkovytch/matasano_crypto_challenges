@@ -33,7 +33,7 @@ public:
      *
      * @return std::string resulting string
      */
-    static std::string numToStr(unsigned long long num, std::size_t min_width = 0, int base = 16);
+    static std::string numToStr(unsigned long long num, int min_width = 0, int base = 16);
 
     /**
      * @brief Converts hex string of 3 bytes (6 length) to base64
@@ -74,7 +74,7 @@ private:
      * @param num number to convert
      * @return base64 char
      */
-    static char numToBase64(unsigned int num);
+    static char numToBase64(unsigned long long num);
 
     /**
      * @brief convert a base64 char into number

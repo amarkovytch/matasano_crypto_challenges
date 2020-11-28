@@ -16,7 +16,7 @@ std::tuple<std::string, std::uint8_t, double> DecryptorXor::decipherSingle(const
     std::uint8_t curKey = 0;
     do
     {
-        auto curDecipher = cipheredData ^ curKey;
+        auto curDecipher = cipheredData ^ ByteData(curKey);
 
         auto curConfidence = measureConfidence(curDecipher);
 
@@ -101,7 +101,7 @@ std::vector<std::size_t> DecryptorXor::guessKeySize(const ByteData &cipheredData
         }
 
         double currHamming = 0.0;
-        double hammingIncr = 1.0 / rows.size();
+        double hammingIncr = 1.0 / static_cast<double>(rows.size());
 
         for (std::size_t i = 0; i < rows.size(); i++)
         {

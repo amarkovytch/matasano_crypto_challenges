@@ -17,7 +17,7 @@ ByteData Padder::padToBlockSize(const ByteData &unpaddedBlock, std::uint8_t bloc
                  " is bigger than size of the blocksize " + std::to_string(blockSize),
              std::invalid_argument);
 
-    std::uint8_t bytesNumToPad = blockSize - unpaddedBlock.size();
+    std::uint8_t bytesNumToPad = blockSize - static_cast<std::uint8_t>(unpaddedBlock.size());
     if (0 == bytesNumToPad)
     {
         bytesNumToPad = blockSize;

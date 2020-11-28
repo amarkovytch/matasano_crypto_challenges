@@ -43,14 +43,9 @@ public:
      * @brief Construct a new ByteData object from a single byte
      *
      * @param b byte to construct object from
+     * @param size number of bytes in a new object (all equal to b)
      */
-    ByteData(std::uint8_t b) : byteData_(1, b){};
-    /**
-     * @brief Construct a new Byte Data object with size 0's
-     *
-     * @param size the number of 0 to fill in underying data
-     */
-    explicit ByteData(std::size_t size) : byteData_(size, std::uint8_t{0}){};
+    ByteData(std::uint8_t b, std::size_t size = 1) : byteData_(size, b){};
 
     /**
      * @brief Construct a new ByteData object from a vector of bytes

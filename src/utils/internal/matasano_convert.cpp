@@ -5,13 +5,15 @@
 #include <iomanip>
 #include <sstream>
 
-char Convert::numToBase64(unsigned int num)
+char Convert::numToBase64(unsigned long long longNum)
 {
-    LOGIC_ASSERT(num <= 63);
+    LOGIC_ASSERT(longNum <= 63);
+
+    char num = static_cast<char>(longNum);
 
     if (num <= 25)
     {
-        return num + 'A';
+        return num +'A';
     }
 
     if (num <= 51)
@@ -137,7 +139,7 @@ std::string Convert::padWith(const std::string &str, const std::string &pad, std
 }
 
 // TODO consider using to_char here and in other places
-std::string Convert::numToStr(unsigned long long num, std::size_t min_width, int base)
+std::string Convert::numToStr(unsigned long long num, int min_width, int base)
 {
     std::ostringstream os;
     os << std::setbase(base) << std::setfill('0') << std::setw(min_width) << num;

@@ -233,7 +233,7 @@ std::string ByteData::strBase64() const
     std::string result;
 
     auto numBytes = byteData_.size();
-    unsigned char bytesToPad = (3 - numBytes % 3) % 3;
+    auto bytesToPad = (3 - numBytes % 3) % 3;
 
     // convert every 3 bytes to 4 octal numbers and from that to one base64 symbol
     // iterate all the triples except the reminder
@@ -273,13 +273,13 @@ double ByteData::hamming(const ByteData &another)
 
     auto tmp = (*this) ^ another;
 
-    double byteFraction = 1.0 / (tmp.size());
+    double byteFraction = 1.0 / static_cast<double>(tmp.size());
     double result = 0;
 
     for (auto b : tmp.secureData())
     {
         std::bitset<8> bitset(b);
-        result += bitset.count() * byteFraction;
+        result += static_cast<double>(bitset.count()) * byteFraction;
     }
 
     return result;

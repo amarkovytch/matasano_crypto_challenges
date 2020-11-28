@@ -8,16 +8,16 @@ template <class T> static double calculateMean(const T &vector)
     double sum = 0;
     for (const auto &elm : vector)
     {
-        sum += elm;
+        sum += static_cast<double>(elm);
     }
 
-    return sum / vector.size();
+    return sum / static_cast<double>(vector.size());
 }
 
 template <class T> std::pair<double, double> static calculateMeanBounds(T low, T high, std::size_t sampleSize)
 {
-    double stdev = (high - low) * std::sqrt(1.0 / 12.0);
-    double mean = (high + low) * 0.5;
+    double stdev = static_cast<double>(high - low) * std::sqrt(1.0 / 12.0);
+    double mean = static_cast<double>(high + low) * 0.5;
 
     double upperMean = mean + stdev / std::sqrt(static_cast<double>(sampleSize));
     double lowerMean = mean - stdev / std::sqrt(static_cast<double>(sampleSize));

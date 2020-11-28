@@ -23,7 +23,7 @@ int main()
 {
     using namespace std::placeholders;
 
-    AesEcbOracle oracle(randomEncryptor, AesEcbOracle::EcryptorType::Plain_Secret);
+    AesEcbOracle oracle(randomEncryptor, AesEcbOracle::EncryptorType::Plain_Secret);
     auto recovered = oracle.recoverSecret();
 
     std::cout << "The secret is:" << std::endl;

@@ -60,7 +60,7 @@ ByteData Aes::encryptDecrypt(const ByteData &data, bool encrypt) const
 ByteData Aes::ecbEncryptDecryptBlock(const ByteData &block, bool encrypt) const
 {
     LOGIC_ASSERT(block.size() % CryptoConstants::BLOCK_SIZE_BYTES == 0);
-    ByteData result(block.size());
+    ByteData result(0, block.size());
 
     CryptoPP::SecByteBlock key(key_.secureData().data(), key_.size());
     if (encrypt)
