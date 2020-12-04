@@ -46,6 +46,15 @@ template <typename T> requires std::is_integral_v<T> T randomNum(T from, T to)
  */
 ByteData randomData(std::size_t length);
 
+/**
+ * @brief Ceiling of an unsigned integer division
+ *
+ * @param a first num
+ * @param b second num
+ * @return ceil (a / b)
+ */
+std::size_t ceil(std::size_t a, std::size_t b);
+
 } // namespace GeneralUtils
 
 #endif

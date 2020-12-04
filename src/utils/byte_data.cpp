@@ -379,3 +379,11 @@ ByteData ByteData::subData(std::size_t start, std::size_t count) const
 
     return ByteData(Botan::secure_vector<std::uint8_t>(byteData_.begin() + start, byteData_.begin() + start + count));
 }
+
+ByteData::ByteData(const std::vector<ByteData> &rows)
+{
+    for (auto const &byteData : rows)
+    {
+        *this += byteData;
+    }
+}

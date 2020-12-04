@@ -2,6 +2,7 @@
 #define MATASANO_PADDER_H
 
 #include "byte_data.h"
+#include "crypto_constants.h"
 #include <cstdint>
 
 /**
@@ -32,7 +33,8 @@ public:
      *
      * @throw std::invalid_argument if block size > blockSize
      */
-    static ByteData padToBlockSize(const ByteData &unpaddedBlock, std::uint8_t blockSize);
+    static ByteData padToBlockSize(const ByteData &unpaddedBlock,
+                                   std::uint8_t blockSize = CryptoConstants::BLOCK_SIZE_BYTES);
 
     /**
      * @brief Removes padding that was added according to PKCS#7 format (@see padToBlockSize)

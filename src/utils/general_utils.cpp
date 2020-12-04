@@ -13,3 +13,5 @@ ByteData GeneralUtils::randomData(std::size_t length)
 
     return res;
 }
+
+std::size_t GeneralUtils::ceil(std::size_t a, std::size_t b) { return a / b + (a % b != 0); }

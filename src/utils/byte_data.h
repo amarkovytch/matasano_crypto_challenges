@@ -62,6 +62,13 @@ public:
     ByteData(const Botan::secure_vector<std::uint8_t> bytes) : byteData_(std::move(bytes)){};
 
     /**
+     * @brief Construct a new Byte Data object from a vector of rows
+     *
+     * @param rows vector of rows of ByteData
+     */
+    ByteData(const std::vector<ByteData> &rows);
+
+    /**
      * @brief concatenates the data of two objects
      *
      * @param lhs the first argument

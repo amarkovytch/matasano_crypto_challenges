@@ -2,6 +2,7 @@
 #define MATASANO_BLOCK_AGGREGATOR_H
 
 #include "byte_data.h"
+#include "crypto_constants.h"
 #include "generator.h"
 
 /**
@@ -35,7 +36,8 @@ public:
      * Also on UnpadOnAggregateBlock if source data is not whole blocks (because in this case we assume that it is
      * padded encrypted data)
      */
-    CryptoBlockAggregator(const ByteData &source, Padding padding, std::uint8_t blockSize = 16);
+    CryptoBlockAggregator(const ByteData &source, Padding padding,
+                          std::uint8_t blockSize = CryptoConstants::BLOCK_SIZE_BYTES);
 
     /**
      * @brief Return the next block from source. If the block is the last one and Padding was PadOnGetBlock - pad it
